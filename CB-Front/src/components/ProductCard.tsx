@@ -8,7 +8,7 @@ type ProductCardProps = {
 
 const ProductCard = ({ name }: ProductCardProps) =>  {
     const [hasliked,setHasLiked] = useState(false)
-    const [count,setCount] = useState(25)
+    const [count,setCount] = useState(0)
     
     const handleLike = () => {
         if (hasliked){
@@ -23,7 +23,7 @@ const ProductCard = ({ name }: ProductCardProps) =>  {
     };
 
     return (
-        <div className="bg-blue-200 rounded-lg shadow-md p-4">
+        <div className="bg-green-300 rounded-lg shadow-md p-4 ">
             <h3 className="text-lg font-bold">{name}</h3>
             <div className="mt-2">
                 <p className="text-gray-600">Description of the product.</p>

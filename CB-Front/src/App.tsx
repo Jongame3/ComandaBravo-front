@@ -7,14 +7,11 @@ function App() {
   return(
     <BrowserRouter>
       <Header />
-      <div className="flex justify-center items-center h-[calc(100vh - 6rem)]">
         <Routes>
           <Route path="/" element={
-            
-            <div><Home /></div>
+            <Home />
         } />
         </Routes>
-      </div>
     </BrowserRouter>
 
     
