@@ -2,11 +2,12 @@ import  React, { useState } from 'react';
 
 type ProductCardProps = {
   name: string;
+  descryption : string;
 };
 
 
 
-const ProductCard = ({ name }: ProductCardProps) =>  {
+const ProductCard = ({ name, descryption }: ProductCardProps) =>  {
     const [hasliked,setHasLiked] = useState(false)
     const [count,setCount] = useState(0)
     
@@ -26,7 +27,7 @@ const ProductCard = ({ name }: ProductCardProps) =>  {
         <div className="bg-green-300 rounded-lg shadow-md p-4 ">
             <h3 className="text-lg font-bold">{name}</h3>
             <div className="mt-2">
-                <p className="text-gray-600">Description of the product.</p>
+                <p className="text-gray-600">{descryption}</p>
                 <div className='flex justify-between'>
                     <button onClick={() => { handleLike(); }} className="cursor-pointer mt-2 text-xl flex">
                         <p>Like</p>

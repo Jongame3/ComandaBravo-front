@@ -4,7 +4,7 @@ import logo from '../assets/paw-svgrepo-com.svg'
 
 function Header() {
   return (
-    <nav className="shadow-md ">
+    <nav className="shadow-md bg-green-200">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-4">
             <img src={logo} alt="Logo" className="w-10 h-10 grow-0"/>
             <Link to="/" className="text-4xl font-bold justify-self-start grow">
