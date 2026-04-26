@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+
 import Hero from "../components/Hero";
 import ProductList from "../components/ProductList";
+import Footer from "../components/Footer";
 
 
 function Home() {
@@ -8,6 +9,7 @@ function Home() {
     <div className='w-full h-full'>
       <Hero/>
       <ProductList/>
+      <Footer/>
     </div>
   );
 } 
