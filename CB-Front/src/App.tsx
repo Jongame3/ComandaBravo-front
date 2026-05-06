@@ -1,19 +1,26 @@
-import React, { useState } from "react";
 import Header from './components/Header'
-import { BrowserRouter , Routes, Route } from 'react-router-dom'
+import {Routes, Route, useLocation} from 'react-router-dom'
+import { useEffect } from 'react';
 import Home from './pages/Home'
+import Catalog from "./pages/Catalog";
+
 
 function App() {
-  return(
-    <BrowserRouter>
-      <Header />
-        <Routes>
-          <Route path="/" element={
-            <Home />
-        } />
-        </Routes>
-    </BrowserRouter>
+  const {pathname} = useLocation();
 
+  useEffect(() => {
+    window.scrollTo(0,0);
+  }, [pathname]);
+
+
+  return(
+      <>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/catalog" element={<Catalog />} />
+      </Routes>
+    </>
     
   )
 }

@@ -11,6 +11,7 @@ function Footer () {
                 <div className="flex gap-6 text-sm text-gray-500">
                     <NavLink to ="/about" className="hover:text-white">О нас</NavLink>
                     <NavLink to ="/" className="hover:text-white">Главная страница</NavLink>
+                    <NavLink to="/catalog" className="hover:text-white">Наши Услуги</NavLink>
                 </div>
             </div>
 

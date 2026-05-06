@@ -32,7 +32,9 @@ function ProductList() {
 
     return ( 
     <section className="min-h-screen bg-gray-50 py-16">
-        <div className="mx-auto max-w-7xl px-6 py-6 bg-gray-200 rounded-2xl">
+        <div className="w-full text-4xl font-bold leading-tight tracking-tight text-center text-blue-950 md:text-5xl lg:text-6xl">Каталог наших услуг</div>
+        <div className="w-full text-2xl"></div>
+        <div className="mx-auto max-w-7xl px-6 py-6 bg-gray-200 rounded-2xl mt-4">
             <Searchbar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
             <p className="px-6 font-sans font-lg font-bold">Найдено: {filtered.length} услуг</p>
             {loading ? (
