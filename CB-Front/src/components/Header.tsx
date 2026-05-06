@@ -4,7 +4,7 @@ import logo from '../assets/paw-svgrepo-com.svg'
 
 function Header() {
   return (
-    <nav className="shadow-md bg-green-200 sticky top-0">
+    <nav className="shadow-md bg-green-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-4">
             <img src={logo} alt="Logo" className="w-10 h-10 grow-0"/>
             <Link to="/" className="text-4xl font-bold justify-self-start grow">
@@ -13,8 +13,8 @@ function Header() {
 
             <div className="hidden md:flex space-x-6">
                 <NavLink to = "/"  className={' px-4 py-3 rounded-lg font-medium text-gray-700 transition duration-300 hover:bg-green-100 hover:text-green-700'}>Home</NavLink>
-                <NavLink to = "/about" className={' px-4 py-3 rounded-lg font-medium text-gray-700 transition duration-300 hover:bg-green-100 hover:text-green-700'}>About</NavLink>
-                <NavLink to = "/contact" className={' px-4 py-3 rounded-lg font-medium text-gray-700 transition duration-300 hover:bg-green-100 hover:text-green-700'}>Contact</NavLink>
+                <NavLink to = "/about" className={' px-4 py-3 rounded-lg font-medium text-gray-700 transition duration-300 hover:bg-green-100 hover:text-green-700'}>О нас</NavLink>
+                <NavLink to = "/contact" className={' px-4 py-3 rounded-lg font-medium text-gray-700 transition duration-300 hover:bg-green-100 hover:text-green-700'}>Контакты</NavLink>
 
             </div>
         </div>
