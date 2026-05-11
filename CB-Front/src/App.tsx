@@ -3,7 +3,7 @@ import {Routes, Route, useLocation} from 'react-router-dom'
 import { useEffect } from 'react';
 import Home from './pages/Home'
 import Catalog from "./pages/Catalog";
-
+import Authentication from './pages/Authentication';
 
 function App() {
   const {pathname} = useLocation();
@@ -15,10 +15,10 @@ function App() {
 
   return(
       <>
-      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/catalog" element={<Catalog />} />
+        <Route path="/auth" element ={<Authentication />}/>
       </Routes>
     </>
     

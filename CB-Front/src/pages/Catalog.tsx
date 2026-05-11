@@ -1,6 +1,6 @@
-
 import Footer from "../components/Footer";
 import ProductList from "../components/ProductList";
+import Header from "../components/Header";
 
 
 
