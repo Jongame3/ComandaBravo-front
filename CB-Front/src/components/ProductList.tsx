@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import Searchbar from "./Searchbar";
-import {type Product, products} from "./products";
+import type { Product } from "../data/adminType";
+import { apiFetch } from "../Functions/apiFetch";
 
 function ProductList() {
-    const [productsList,setProducts] = useState<Product[]>(products);
+    const [productsList,setProducts] = useState<Product[]>([]);
     const [searchTerm,setSearchTerm] = useState("");
     const [loading,setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const fetchdata = async () => {
     try{
-        const res = await fetch("https://fakestoreapi.com.products");
+        const res = await apiFetch("/product/getAll")
         if (!res.ok) throw new Error(`Http ${res.status}`);
         const data: Product[] = await res.json();
         setProducts(data);
+        console.log("products from API:", data);
     } catch (err :any) {
         setErrorMessage(err.mesaage);
     } finally {
@@ -22,12 +24,22 @@ function ProductList() {
     }
     };
 
-
     useEffect(() => {
         fetchdata();
     } ,[]);
 
-    const filtered = productsList.filter( p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    const filtered = productsList.filter((product) => {
+    const normalizedSearch = (searchTerm?.toLowerCase() || "").trim();
+  
+    const target = [
+        product.name,
+        product.description,
+    ]
+    .join(" ")
+    .toLowerCase();
+
+  return target.includes(normalizedSearch);
+});
 
 
     return ( 
@@ -46,7 +58,7 @@ function ProductList() {
             ) : (
                 <div className="mx-auto max-w-7xl px-6 py-5">
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {filtered.map((product ) => <ProductCard  key = {product.id} name ={product.name} descryption={product.descryption} price = {product.price} />)}
+                        {filtered.map((product) => <ProductCard  key = {product.id} name ={product.name} descryption={product.description} price = {product.price} />)}
                     </div>
                 </div>
                 )

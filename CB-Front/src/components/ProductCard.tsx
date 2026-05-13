@@ -33,8 +33,8 @@ const ProductCard = ({ name, descryption, price }: ProductCardProps) =>  {
                 <p className="text-gray-900">Стоимость: {price}</p>
                 <button onClick={() => { handleLike(); }} 
                 className="w-38 mt-3 absolute bottom-3 right-3 bg-green-400 rounded-full hover:bg-green-200
-                inline-flex items-center justify-center cursor-pointer px-3 py-2 text-xl ">
-                    Гааааз
+                inline-flex items-center justify-center cursor-pointer px-3 py-2 text-xl">
+                    Записаться
                 </button> 
             </div>
         </div>

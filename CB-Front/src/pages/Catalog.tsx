@@ -7,6 +7,7 @@ import Header from "../components/Header";
 function Catalog() {
   return (
     <div className='w-full h-full'>
+        <Header/>
         <ProductList/>
         <Footer/>
     </div>

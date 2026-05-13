@@ -22,7 +22,7 @@ const Hero = () => {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <NavLink
-                to="/auth"
+                to="/register"
                 className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-bold text-blue-600 transition hover:bg-blue-50"
               >
                 Создать профиль
