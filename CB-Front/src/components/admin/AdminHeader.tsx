@@ -1,3 +1,5 @@
+import { useAuth } from "../AuthContext";
+
 type AdminHeaderProps = {
   pendingCount: number;
   totalAppointments: number;
@@ -5,10 +7,9 @@ type AdminHeaderProps = {
   onOpenPending: () => void;
 };
 
-export function AdminHeader({
-  pendingCount,
-  totalAppointments,
-}: AdminHeaderProps) {
+export function AdminHeader({pendingCount,totalAppointments,}: AdminHeaderProps) {
+  const {logout} = useAuth();
+  
   return (
     <div className="rounded-4xl bg-linear-to-r from-[#1765f3] to-[#18a0f4] px-6 py-8 text-white shadow-[0_20px_40px_rgba(0,0,0,0.08)] md:px-10 md:py-10">
       <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
@@ -61,6 +62,14 @@ export function AdminHeader({
               </p>
               <p className="mt-2 text-sm text-slate-500">
                 В системе администратора
+              </p>
+
+            </div>
+            <div className="rounded-3xl bg-white px-5 py-5 text-[#1b2b6b] shadow-sm">
+              <p className="text-sm font-medium text-slate-500">Выйти из профиля ветеринара</p>
+              <p className="mt-3 text-3xl font-extrabold">
+               <button className = "bg-blue-800 w-30 rounded-full inline-flex items-center justify-center cursor-pointer px-3 py-2 text-sm text-white"
+                            onClick={logout}>Выйти</button>
               </p>
             </div>
           </div>

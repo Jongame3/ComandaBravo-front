@@ -1,5 +1,6 @@
 import { createContext, useContext, useState,useEffect } from "react";
 import type { ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 
 type User = {
     id: number,
@@ -23,7 +24,7 @@ type AuthProviderProps = {
 
 export function AuthProvider({children} : AuthProviderProps) {
     const[token,setToken] = useState<string | null>(() => {return localStorage.getItem("token")});
-
+    const navigate = useNavigate();
     const[user,setUser] = useState<User | null>(() => {
         const savedUser = localStorage.getItem("user");
 
@@ -80,6 +81,7 @@ export function AuthProvider({children} : AuthProviderProps) {
 
         setToken(null);
         setUser(null);
+        navigate("/");
     }
 
     return (

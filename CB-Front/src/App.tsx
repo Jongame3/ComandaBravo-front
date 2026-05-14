@@ -5,7 +5,7 @@ import Catalog from "./pages/Catalog";
 import Authentication from './pages/Authentication';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import AdminPanel from './pages/AdminPanel';
-import Header from './components/Header';
+import Registration from './pages/Registration';
 
 
 function App() {
@@ -26,6 +26,7 @@ function App() {
         { <ProtectedRoute allowedRole={20}>
             <AdminPanel/>
           </ProtectedRoute> }/>
+        <Route path = "/registration" element = {<Registration/>}/>
       </Routes>
     </>
     

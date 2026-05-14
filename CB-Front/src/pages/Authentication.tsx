@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../components/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 type AuthResponse = {
     isSucces : boolean,
@@ -81,7 +81,7 @@ function Authentication() {
                 <div className="flex justify-center gap-10">
                     <button className = "bg-blue-800 w-50 rounded-full inline-flex items-center justify-center cursor-pointer px-3 py-2 text-md text-white"
                             onClick={handleLogin}>Войти</button>
-                    <button className = "bg-blue-800 w-50 rounded-full inline-flex items-center justify-center cursor-pointer px-3 py-2 text-md text-white">Зарегистрироваться</button>
+                    <NavLink to = "/registration" className={"bg-blue-800 w-50 rounded-full inline-flex items-center justify-center cursor-pointer px-3 py-2 text-md text-white"}>Зарегистрироваться</NavLink>
                 </div>
             </div>
         </section>
