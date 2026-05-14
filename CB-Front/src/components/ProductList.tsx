@@ -16,7 +16,6 @@ function ProductList() {
         if (!res.ok) throw new Error(`Http ${res.status}`);
         const data: Product[] = await res.json();
         setProducts(data);
-        console.log("products from API:", data);
     } catch (err :any) {
         setErrorMessage(err.mesaage);
     } finally {

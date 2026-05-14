@@ -15,11 +15,11 @@ export function AddProductTab() {
   ) {
     const { name, value } = e.target;
 
-    // Уточнение типа
+
     let newValue: string | number = value;
 
     if (name === "Price" || name === "Duration") {
-      newValue = value === "" ? 0 : parseFloat(value); // Конвертация в число для числовых полей
+      newValue = value === "" ? 0 : parseFloat(value); 
     }
 
     setProduct((prev) => ({
@@ -40,7 +40,7 @@ export function AddProductTab() {
       console.log("Ошибка при отправке данных на сервер");
     }
 
-    console.log("Отправить продукт на backend:", product);
+
 
     setProduct({
       Name: "",
@@ -187,8 +187,7 @@ export function AddProductTab() {
         <div className="mt-6 rounded-3xl bg-white/50 p-5">
           <p className="text-sm leading-6 text-slate-700">
             Здесь показан пример того, как продукт будет выглядеть в карточке
-            каталога. После подключения API данные из формы можно будет
-            отправлять на backend через функцию создания продукта.
+            каталога. 
           </p>
         </div>
       </div>

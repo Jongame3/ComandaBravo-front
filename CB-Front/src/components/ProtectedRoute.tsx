@@ -14,7 +14,7 @@ export function ProtectedRoute({children, allowedRole} : ProtectedRouteProps) {
     if (!isAuthenticated) {
         return <Navigate to = "/auth" replace/>;
     }
-    if (allowedRole == 1 && !user ){
+    if (allowedRole && user?.role !== allowedRole) {
         return <Navigate to = "/" replace/>
     }
 

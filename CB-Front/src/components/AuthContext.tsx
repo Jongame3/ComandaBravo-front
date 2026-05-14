@@ -1,6 +1,6 @@
 import { createContext, useContext, useState,useEffect } from "react";
 import type { ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 type User = {
     id: number,
@@ -78,10 +78,9 @@ export function AuthProvider({children} : AuthProviderProps) {
     function logout() {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-
+        localStorage.removeItem("tokenTime");
         setToken(null);
         setUser(null);
-        navigate("/");
     }
 
     return (

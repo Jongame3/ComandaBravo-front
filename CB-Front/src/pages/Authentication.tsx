@@ -40,7 +40,6 @@ function Authentication() {
             role : data.role,
         };
 
-        console.log(data)
         loginf(data.message, user)
         
         

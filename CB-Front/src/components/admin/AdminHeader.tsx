@@ -1,4 +1,5 @@
 import { useAuth } from "../AuthContext";
+import { replace, useNavigate } from "react-router-dom";
 
 type AdminHeaderProps = {
   pendingCount: number;
@@ -7,9 +8,21 @@ type AdminHeaderProps = {
   onOpenPending: () => void;
 };
 
+
+
 export function AdminHeader({pendingCount,totalAppointments,}: AdminHeaderProps) {
-  const {logout} = useAuth();
-  
+  const {logout} = useAuth()
+  const navigate = useNavigate()
+
+
+  function handleLogout() {
+    logout()
+
+    setTimeout(() => {
+      navigate("/", {replace : true});
+    },0)
+  }
+
   return (
     <div className="rounded-4xl bg-linear-to-r from-[#1765f3] to-[#18a0f4] px-6 py-8 text-white shadow-[0_20px_40px_rgba(0,0,0,0.08)] md:px-10 md:py-10">
       <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
@@ -69,7 +82,7 @@ export function AdminHeader({pendingCount,totalAppointments,}: AdminHeaderProps)
               <p className="text-sm font-medium text-slate-500">Выйти из профиля ветеринара</p>
               <p className="mt-3 text-3xl font-extrabold">
                <button className = "bg-blue-800 w-30 rounded-full inline-flex items-center justify-center cursor-pointer px-3 py-2 text-sm text-white"
-                            onClick={logout}>Выйти</button>
+                            onClick={handleLogout}>Выйти</button>
               </p>
             </div>
           </div>
