@@ -28,7 +28,7 @@ export function AddProductTab() {
     }));
   }
 
-  async function handleSubmitProduct(e: React.FormEvent) {
+  async function handleSubmitProduct(e: React.SubmitEvent) {
     e.preventDefault();
 
     const response = await apiFetch("/product", {
@@ -40,7 +40,7 @@ export function AddProductTab() {
       console.log("Ошибка при отправке данных на сервер");
     }
 
-
+    console.log("Отправить продукт на backend:", product);
 
     setProduct({
       Name: "",
@@ -63,11 +63,11 @@ export function AddProductTab() {
     <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
       <div className="rounded-[28px] bg-white p-6 shadow-[0_10px_22px_rgba(0,0,0,0.06)]">
         <h2 className="text-3xl font-extrabold text-[#1b2b6b]">
-          Добавление продукта
+          Добавление услуги
         </h2>
 
         <p className="mt-2 text-slate-500">
-          Создайте новую услугу или продукт, который будет отображаться в
+          Создайте новую услугу, которая будет отображаться в
           каталоге.
         </p>
 
@@ -110,7 +110,7 @@ export function AddProductTab() {
               name="Duration"
               value={product.Duration || ""}
               onChange={handleProductChange}
-              placeholder="Например: 30"
+              placeholder="Например: 1"
               className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
             />
           </div>
@@ -125,7 +125,7 @@ export function AddProductTab() {
               value={product.Description}
               onChange={handleProductChange}
               rows={5}
-              placeholder="Кратко опишите продукт или услугу"
+              placeholder="Кратко опишите услугу"
               className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
             />
           </div>
@@ -151,17 +151,17 @@ export function AddProductTab() {
 
       <div className="rounded-[28px] bg-[#a8e2ba] p-6 shadow-[0_10px_22px_rgba(0,0,0,0.06)]">
         <h2 className="text-3xl font-extrabold text-black">
-          Предпросмотр продукта
+          Предпросмотр услуги
         </h2>
 
         <div className="mt-6 rounded-3xl bg-white p-6 shadow-[0_10px_18px_rgba(0,0,0,0.05)]">
           <h3 className="text-2xl font-extrabold text-black">
-            {product.Name || "Название продукта"}
+            {product.Name || "Название услуги"}
           </h3>
 
           <p className="mt-3 min-h-18 text-slate-700">
             {product.Description ||
-              "Описание продукта будет отображаться здесь."}
+              "Описание услуги будет отображаться здесь."}
           </p>
 
           <div className="mt-5 flex flex-wrap gap-3 text-sm">
@@ -186,8 +186,8 @@ export function AddProductTab() {
 
         <div className="mt-6 rounded-3xl bg-white/50 p-5">
           <p className="text-sm leading-6 text-slate-700">
-            Здесь показан пример того, как продукт будет выглядеть в карточке
-            каталога. 
+            Здесь показан пример того, как услуга будет выглядеть в карточке
+            каталога.
           </p>
         </div>
       </div>

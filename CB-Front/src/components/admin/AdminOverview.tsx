@@ -26,7 +26,7 @@ export function AdminOverview({pendingCount,totalAppointments,onOpenProducts,onO
               onClick={onOpenProducts}
               className="rounded-full bg-[#09da72] px-5 py-3 text-sm font-semibold text-black transition hover:brightness-95"
             >
-              Новый продукт
+              Новая услуга
             </button>
 
             <button
@@ -76,7 +76,7 @@ export function AdminOverview({pendingCount,totalAppointments,onOpenProducts,onO
         <div className="grid gap-5 lg:grid-cols-3">
           <OverviewCard
             title="Добавление продуктов"
-            description="Создавайте новые услуги или товары для каталога."
+            description="Создавайте новые услуги для каталога."
             buttonText="Добавить"
             onClick={onOpenProducts}
           />

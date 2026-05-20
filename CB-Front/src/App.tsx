@@ -6,6 +6,8 @@ import Authentication from './pages/Authentication';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import AdminPanel from './pages/AdminPanel';
 import Registration from './pages/Registration';
+import UserProfilePage from './pages/UserProfile';
+import BookingPage from './pages/BookingPage';
 
 
 function App() {
@@ -27,6 +29,13 @@ function App() {
             <AdminPanel/>
           </ProtectedRoute> }/>
         <Route path = "/registration" element = {<Registration/>}/>
+        <Route path="/profile" element = {
+          <ProtectedRoute allowedRole={1}>
+            <UserProfilePage/>
+          </ProtectedRoute>
+          }/>
+        <Route path="/booking/:serviceId" element = {<BookingPage/>}/>
+
       </Routes>
     </>
     

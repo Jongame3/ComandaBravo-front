@@ -7,7 +7,7 @@ type AdminTabsProps = {
 
 const tabs: { id: AdminTab; label: string }[] = [
   { id: "overview", label: "Обзор" },
-  { id: "products", label: "Добавление продуктов" },
+  { id: "products", label: "Добавление услуг" },
   { id: "pending", label: "Подтверждение записей" },
   { id: "appointments", label: "Просмотр записей" },
 ];

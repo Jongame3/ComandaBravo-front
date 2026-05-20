@@ -1,6 +1,6 @@
 import { createContext, useContext, useState,useEffect } from "react";
 import type { ReactNode } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type User = {
     id: number,
@@ -37,35 +37,25 @@ export function AuthProvider({children} : AuthProviderProps) {
     const isAuthenticated = !!token
 
     useEffect(() => {
-        const tokenTime = localStorage.getItem("tokenTime");
-        if (tokenTime) {
-        const timeElapsed = Date.now() - parseInt(tokenTime);
-
-        if (timeElapsed > 3600000) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            localStorage.removeItem("tokenTime");
-            setToken(null);
-            setUser(null);
-        }
-        }
-    }, []);
-
-    useEffect(() => {
-        if (token) {
+        if (!token) return;
         const tokenTime = Date.now().toString();
         localStorage.setItem("tokenTime", tokenTime);
 
-      
-        setTimeout(() => {
+        const timerId = setTimeout(() => {
             localStorage.removeItem("token");
             localStorage.removeItem("user");
             localStorage.removeItem("tokenTime");
             setToken(null);
             setUser(null);
-            }, 3600000); 
-        }
-    } , [token]);
+            console.log("Таймер сработал")
+            navigate("/")
+            }, 3600000);
+        
+
+        console.log("таймер запущен")
+
+        return () => clearTimeout(timerId);
+        }, [token]);
 
     function loginf(token :string, user: User){
         localStorage.setItem("token",token);

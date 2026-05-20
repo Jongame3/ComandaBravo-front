@@ -12,6 +12,7 @@ function Footer () {
                     <NavLink to ="/about" className="hover:text-white">О нас</NavLink>
                     <NavLink to ="/" className="hover:text-white">Главная страница</NavLink>
                     <NavLink to="/catalog" className="hover:text-white">Наши Услуги</NavLink>
+                    <NavLink to ="/profile" className="hover:text-white">Профиль</NavLink>
                 </div>
             </div>
 
