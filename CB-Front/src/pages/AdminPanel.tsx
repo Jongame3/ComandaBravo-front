@@ -59,6 +59,7 @@ export default function AdminPanel() {
       if(aprovedappointment) {
         aprovedappointment.isApproved = true;
       }
+      setAppointments((prev) => prev.map((item) => item.id === id ? {...item, isApproved:true} : item))
   }
 
 

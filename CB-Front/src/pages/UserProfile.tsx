@@ -69,6 +69,15 @@ export default function UserProfilePage() {
         loadAppointments();
         loadPets();
     },[])
+    async function handleAppointmentDiscard(id: number) {
+        const response = await apiFetch(`/appointment?id=${id}`, {
+            method: "DELETE",
+        })
+        if(!response.ok) {
+            throw new Error("вафельки");
+        }
+        setAppointments((prev) => prev.filter((a) => a.id !== id));
+    }
 
   return (
     <>
@@ -152,6 +161,7 @@ export default function UserProfilePage() {
                                                   <p>Дата: {appointment.date}</p>
                                                   <p>Время: {formatTime(appointment.startTime)}</p>
                                               </div>
+                                              <button onClick={() => handleAppointmentDiscard(appointment.id)} className="w-20 mt-3 bottom-3 right-3 bg-green-400 rounded-full hover:bg-green-200 inline-flex items-center justify-center cursor-pointer px-3 py-2 text-sm">Отменить</button>
                                           </div>
                                       );
                                   })}
@@ -241,7 +251,6 @@ export default function UserProfilePage() {
                           <h2 className="mt-3 text-3xl font-extrabold">
                               {user?.username || "User"}
                           </h2>
-                          <h2> {user?.id}</h2>
                       </div>
 
                       <div className="mt-5 grid gap-4">
@@ -260,9 +269,7 @@ export default function UserProfilePage() {
                               <p className="text-sm font-medium text-slate-500">Выйти из профиля</p>
                               <button className = "mt-3 bg-blue-800 w-30 rounded-full inline-flex items-center justify-center cursor-pointer px-3 py-2 text-sm text-white"
                             onClick={handleLogout}>Выйти</button>
-                              <p className="mt-2 text-sm text-slate-500">Добавлены в профиль</p>
                           </div>
-                    
                       </div>
                   </aside>
               </div>

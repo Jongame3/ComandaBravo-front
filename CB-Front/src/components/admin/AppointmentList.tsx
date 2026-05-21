@@ -23,6 +23,7 @@ function formatTime(startTime: number) {
   return `${startTime.toString().padStart(2, "0")}:00`;
 }
 
+
 export function AppointmentList({appointments,variant,emptyText,showConfirmButton = false,onConfirm,}: AppointmentListProps) {
   if (appointments.length === 0) {
     return (
