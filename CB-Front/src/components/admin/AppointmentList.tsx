@@ -1,6 +1,16 @@
 import type { Appointment } from "../../data/adminType";
 import { AppointmentCard } from "./AppointmentCard";
 
+const PetTypeMap: Record<number, string> = {
+  0: "Кошка",
+  1: "Собака",
+  2: "Попугай",
+  3: "Хомяк",
+  4: "Мышь",
+  5: "Кролик",
+  6: "Морская свинка",
+};
+
 type AppointmentListProps = {
   appointments: Appointment[];
   variant: "cards" | "table";
@@ -56,6 +66,7 @@ export function AppointmentList({appointments,variant,emptyText,showConfirmButto
             <tr className="text-left text-sm font-semibold text-[#1b2b6b]">
               <th className="px-5 py-4">Клиент</th>
               <th className="px-5 py-4">Питомец</th>
+              <th className="px-5 py-4">Тип</th>
               <th className="px-5 py-4">Услуга</th>
               <th className="px-5 py-4">Дата</th>
               <th className="px-5 py-4">Время</th>
@@ -85,6 +96,9 @@ export function AppointmentList({appointments,variant,emptyText,showConfirmButto
 
                   <td className="px-5 py-4 text-slate-700">
                     {appointment.petInfo}
+                  </td>
+                  <td className="px-5 py-4 text-slate-700">
+                    {PetTypeMap[appointment.petType]}
                   </td>
 
                   <td className="px-5 py-4 text-slate-700">

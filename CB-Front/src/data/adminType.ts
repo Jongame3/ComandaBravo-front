@@ -9,6 +9,7 @@ export type Appointment = {
   startTime: number;
   date: string;
   petInfo: string;
+  petType : number;
   isApproved: boolean;
 };
 

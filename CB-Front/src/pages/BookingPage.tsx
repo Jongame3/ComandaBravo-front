@@ -23,7 +23,7 @@ export default function BookingPage() {
 
   const [service, setService] = useState<Product | null>(null);
   const [pets, setPets] = useState<Pet[]>([]);
-  const [selectedPet, setSelectedPet] = useState<string>("");
+  const [selectedPet, setSelectedPet] = useState<number | null>(null);
 
   const [dates, setDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -57,7 +57,7 @@ export default function BookingPage() {
       if (!res.ok) return;
       const data: Pet[] = await res.json();
       setPets(data);
-      if (data.length > 0) setSelectedPet(data[0].name);
+      if (data.length > 0) setSelectedPet(data[0].id);
     }
     loadPets();
   }, [user?.id]);
@@ -71,7 +71,7 @@ export default function BookingPage() {
       const data: AppointmentSlot[] = await res.json();
 
       const now = new Date();
-      now.setHours(now.getHours() + 1)
+      now.setMinutes(now.getMinutes() + 30);
       const filteredSlots = data.filter((slot) => {
         const slotTime = new Date(`${selectedDate}T${String(slot).padStart(2, "0")}:00`);
         return isAfter(slotTime, now);
@@ -95,9 +95,10 @@ export default function BookingPage() {
         productInfo: service?.name,
         startTime: selectedSlot,
         date: selectedDate,
-        petInfo: selectedPet,
+        petInfo: pets.find((pet) => pet.id === selectedPet)?.name,
         duration: service?.duration,
-        isApproved: false
+        isApproved: false,
+        petType: pets.find((pet) => pet.id === selectedPet)?.type, 
       })
     })
     if (!response.ok) {
@@ -157,7 +158,7 @@ export default function BookingPage() {
           <select
             className="w-full border rounded px-3 py-2"
             value={selectedPet ?? ""}
-            onChange={(e) => setSelectedPet(e.target.value)}
+            onChange={(e) => setSelectedPet(Number(e.target.value))}
           >
             {pets.map((pet) => (
               <option key={pet.id} value={pet.id}>
