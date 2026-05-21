@@ -9,6 +9,7 @@ import { PendingAppointmentsTab } from "../components/admin/PendingAppointmentsT
 import { AppointmentsTab } from "../components/admin/AppointmentsTab";
 import { apiFetch } from "../Functions/apiFetch";
 import Header from "../components/Header";
+import { isAfter } from "date-fns";
 
 
 
@@ -62,9 +63,22 @@ export default function AdminPanel() {
       setAppointments((prev) => prev.map((item) => item.id === id ? {...item, isApproved:true} : item))
   }
 
+  async function handleAppointmentDiscard(id: number) {
+        const response = await apiFetch(`/appointment?id=${id}`, {
+            method: "DELETE",
+        })
+        if(!response.ok) {
+            throw new Error("вафельки");
+        }
+        setAppointments((prev) => prev.filter((a) => a.id !== id));
+    }
 
+  const now = new Date()  
   const pendingAppointments = appointments.filter(
-    (appointment) => appointment.isApproved === false
+    (appointment) => {
+      const slotTime = new Date(`${appointment.date}T${String(appointment.startTime).padStart(2, "0")}:00`);
+        return isAfter(slotTime, now) && !appointment.isApproved;
+    }
   );
 
 
@@ -131,11 +145,11 @@ export default function AdminPanel() {
           {activeTab === "products" && <AddProductTab />}
 
           {activeTab === "pending" && (
-            <PendingAppointmentsTab appointments={pendingAppointments} onConfirm={handleConfirm} />
+            <PendingAppointmentsTab appointments={pendingAppointments} onConfirm={handleConfirm} onDiscard={handleAppointmentDiscard}/>
           )}
 
           {activeTab === "appointments" && (
-            <AppointmentsTab appointments={appointments} onConfirm={handleConfirm}/>
+            <AppointmentsTab appointments={appointments} onConfirm={handleConfirm} onDiscard={handleAppointmentDiscard}/>
           )}
         </div>
       </div>

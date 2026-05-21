@@ -4,9 +4,10 @@ import { AppointmentList } from "./AppointmentList";
 type PendingAppointmentsTabProps = {
   appointments: Appointment[];
   onConfirm?: (id: number) => void;
+  onDiscard?: (id: number) => void;
 };
 
-export function PendingAppointmentsTab({appointments, onConfirm}: PendingAppointmentsTabProps) {
+export function PendingAppointmentsTab({appointments, onConfirm, onDiscard}: PendingAppointmentsTabProps) {
 
   return (
     <div>
@@ -31,6 +32,7 @@ export function PendingAppointmentsTab({appointments, onConfirm}: PendingAppoint
         variant="cards"
         showConfirmButton
         onConfirm={onConfirm}
+        onDiscard={onDiscard}
         emptyText="Нет записей, ожидающих подтверждения."
       />
     </div>

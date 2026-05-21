@@ -5,9 +5,10 @@ import { AppointmentList } from "./AppointmentList";
 type AppointmentsTabProps = {
   appointments: Appointment[];
   onConfirm?: (id: number) => void;
+  onDiscard?: (id: number) => void;
 };
 
-export function AppointmentsTab({ appointments, onConfirm }: AppointmentsTabProps) {
+export function AppointmentsTab({ appointments, onConfirm , onDiscard}: AppointmentsTabProps) {
   const [search, setSearch] = useState("");
 
   
@@ -68,6 +69,7 @@ export function AppointmentsTab({ appointments, onConfirm }: AppointmentsTabProp
           emptyText="Записи не найдены."
           showConfirmButton = {true}
           onConfirm={onConfirm}
+          onDiscard={onDiscard}
         />
       </div>
     </div>

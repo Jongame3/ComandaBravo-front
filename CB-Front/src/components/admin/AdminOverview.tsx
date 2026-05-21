@@ -20,31 +20,6 @@ export function AdminOverview({pendingCount,totalAppointments,onOpenProducts,onO
             подтверждайте записи и просматривайте расписание.
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={onOpenProducts}
-              className="rounded-full bg-[#09da72] px-5 py-3 text-sm font-semibold text-black transition hover:brightness-95"
-            >
-              Новая услуга
-            </button>
-
-            <button
-              type="button"
-              onClick={onOpenPending}
-              className="rounded-full bg-[#09da72] px-5 py-3 text-sm font-semibold text-black transition hover:brightness-95"
-            >
-              Проверить заявки
-            </button>
-
-            <button
-              type="button"
-              onClick={onOpenAppointments}
-              className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#1b2b6b] transition hover:bg-slate-100"
-            >
-              Все записи
-            </button>
-          </div>
         </div>
 
         <div className="rounded-[28px] bg-white p-6 shadow-[0_10px_20px_rgba(0,0,0,0.06)]">

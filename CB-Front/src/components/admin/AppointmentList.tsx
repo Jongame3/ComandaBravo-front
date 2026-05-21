@@ -1,5 +1,6 @@
 import type { Appointment } from "../../data/adminType";
 import { AppointmentCard } from "./AppointmentCard";
+import { isAfter } from "date-fns";
 
 const PetTypeMap: Record<number, string> = {
   0: "Кошка",
@@ -17,24 +18,45 @@ type AppointmentListProps = {
   emptyText: string;
   showConfirmButton?: boolean;
   onConfirm?: (id: number) => void;
+  onDiscard?: (id: number) => void;
 };
 
-function getStatusText(isApproved: boolean) {
-  return isApproved ? "Подтверждена" : "Ожидает";
+function getStatusText(isApproved: boolean, date: string, time : number) {
+  const now = new Date()
+  const appointmentTime = new Date(`${date}T${String(time).padStart(2, "0")}:00`);
+
+  if(isApproved && isAfter(appointmentTime, now)) return "Подтверждена"
+  if(isApproved && !isAfter(appointmentTime, now)) return "Проведена"
+  if(!isApproved && !isAfter(appointmentTime, now)) return "Отменена"
+  return "Ожидает"
 }
 
-function getStatusStyles(isApproved: boolean) {
-  return isApproved
-    ? "bg-emerald-100 text-emerald-700"
-    : "bg-amber-100 text-amber-700";
+function getStatusStyles(isApproved: boolean, date: string, time : number) {
+  const now = new Date()
+  const appointmentTime = new Date(`${date}T${String(time).padStart(2, "0")}:00`);
+
+  if(isApproved && isAfter(appointmentTime, now)) return "bg-emerald-100 text-emerald-700"
+  if(isApproved && !isAfter(appointmentTime, now)) return "bg-emerald-300 text-emerald-700"
+  if(!isApproved && !isAfter(appointmentTime,now)) return "bg-red-400 text-black"
+  return "bg-amber-100 text-amber-700";
 }
 
 function formatTime(startTime: number) {
   return `${startTime.toString().padStart(2, "0")}:00`;
 }
 
+function canConfirm(appointment : Appointment) {
+  if (appointment.isApproved) return false
 
-export function AppointmentList({appointments,variant,emptyText,showConfirmButton = false,onConfirm,}: AppointmentListProps) {
+  const now = new Date()
+  const appointmentTime = new Date(`${appointment.date}T${String(appointment.startTime).padStart(2, "0")}:00`);
+
+  return isAfter(appointmentTime, now);
+
+}
+
+
+export function AppointmentList({appointments,variant,emptyText,showConfirmButton = false,onConfirm, onDiscard}: AppointmentListProps) {
   if (appointments.length === 0) {
     return (
       <div className="rounded-3xl bg-white p-10 text-center shadow-[0_10px_18px_rgba(0,0,0,0.05)]">
@@ -77,8 +99,8 @@ export function AppointmentList({appointments,variant,emptyText,showConfirmButto
 
           <tbody>
             {appointments.map((appointment, index) => {
-              const statusText = getStatusText(appointment.isApproved);
-              const statusStyles = getStatusStyles(appointment.isApproved);
+              const statusText = getStatusText(appointment.isApproved, appointment.date, appointment.startTime);
+              const statusStyles = getStatusStyles(appointment.isApproved, appointment.date, appointment.startTime);
               const formattedTime = formatTime(appointment.startTime);
 
               return (
@@ -123,13 +145,22 @@ export function AppointmentList({appointments,variant,emptyText,showConfirmButto
 
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-2">
-                      {showConfirmButton && !appointment.isApproved && onConfirm && (
+                      {showConfirmButton && canConfirm(appointment) && onConfirm && (
                           <button
                             type="button"
                             onClick={() => onConfirm(appointment.id)}
-                            className="rounded-full bg-[#09da72] px-4 py-2 text-xs font-semibold text-black"
+                            className="rounded-full bg-[#09da72] px-4 py-2 text-xs font-semibold text-black cursor-pointer"
                           >
                             Подтвердить
+                          </button>
+                        )}
+                        {!canConfirm(appointment) && onDiscard &&(
+                          <button
+                            type="button"
+                            onClick={() => onDiscard(appointment.id)}
+                            className="rounded-full bg-red-300 px-4 py-2 text-xs font-semibold text-black cursor-pointer"
+                          >
+                            Удалить
                           </button>
                         )}
                     </div>

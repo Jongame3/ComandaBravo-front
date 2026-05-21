@@ -4,6 +4,7 @@ import { apiFetch } from "../Functions/apiFetch";
 import type { Appointment } from "../data/adminType";
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
+import { isAfter } from "date-fns";
 
 type Pet = {
   id : number;
@@ -22,7 +23,25 @@ const PetTypeMap: Record<number, string> = {
   5: "Кролик",
   6: "Морская свинка",
 };
+function getStatusText(isApproved: boolean, date: string, time : number) {
+  const now = new Date()
+  const appointmentTime = new Date(`${date}T${String(time).padStart(2, "0")}:00`);
 
+  if(isApproved && isAfter(appointmentTime, now)) return "Подтверждена"
+  if(isApproved && !isAfter(appointmentTime, now)) return "Проведена"
+  if(!isApproved && !isAfter(appointmentTime, now)) return "Отменена"
+  return "Ожидает"
+}
+
+function getStatusStyles(isApproved: boolean, date: string, time : number) {
+  const now = new Date()
+  const appointmentTime = new Date(`${date}T${String(time).padStart(2, "0")}:00`);
+
+  if(isApproved && isAfter(appointmentTime, now)) return "bg-emerald-100 text-emerald-700"
+  if(isApproved && !isAfter(appointmentTime, now)) return "bg-emerald-300 text-emerald-700"
+  if(!isApproved && !isAfter(appointmentTime,now)) return "bg-red-400 text-black"
+  return "bg-amber-100 text-amber-700";
+}
 
 export default function UserProfilePage() {
     const {logout} = useAuth()
@@ -128,14 +147,8 @@ export default function UserProfilePage() {
                           ) : (
                               <div className="grid gap-5">
                                   {appointments.map((appointment) => {
-                                      const statusText = appointment.isApproved
-                                          ? "Подтверждена"
-                                          : "Ожидает";
-
-                                      const statusStyle = appointment.isApproved
-                                          ? "bg-emerald-100 text-emerald-700"
-                                          : "bg-amber-100 text-amber-700";
-
+                                      const statusText = getStatusText(appointment.isApproved, appointment.date, appointment.startTime);
+                                      const statusStyle = getStatusStyles(appointment.isApproved, appointment.date, appointment.startTime);
                                       return (
                                           <div
                                               key={appointment.id}
