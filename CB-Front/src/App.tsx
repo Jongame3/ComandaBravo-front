@@ -11,6 +11,7 @@ import BookingPage from './pages/BookingPage';
 import { Petadd } from './pages/Petadd';
 import { PetChange } from './pages/PetChange';
 import ProductChange from './pages/ProductChange';
+import UpdateUserPage from './pages/UserUpdate';
 
 
 function App() {
@@ -55,6 +56,11 @@ function App() {
         <Route path="/productchange/:productId" element = {
           <ProtectedRoute allowedRole={20}>
             <ProductChange/>
+          </ProtectedRoute>
+        }/>
+        <Route path ="/profile/update" element = {
+          <ProtectedRoute allowedRole={1}>
+            <UpdateUserPage/>
           </ProtectedRoute>
         }/>
 

@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../Functions/apiFetch";
 import type { Product } from "../data/adminType";
+import { useToast } from "../components/ToastContext";
+import Header from "../components/Header";
 
 export default function ProductChange() {
   let params = useParams();
   const navigate = useNavigate();
+  const {showToast} = useToast();
 
   const [product, setProduct] = useState<Product>({
     id: 0,
@@ -35,7 +38,7 @@ export default function ProductChange() {
         const response = await apiFetch(`/product/GetProductById?id=${params.productId}`);
 
         if (!response.ok) {
-          throw new Error("Не удалось загрузить данные услуги.");
+          showToast("Не удалось загрузить данные услуги.", "error");
         }
 
         const data: Product = await response.json();
@@ -73,22 +76,22 @@ export default function ProductChange() {
     e.preventDefault();
 
     if (!product.name.trim()) {
-      alert("Введите название услуги.");
+      showToast("Введите название услуги.", "info");
       return;
     }
 
     if (!product.description.trim()) {
-      alert("Введите описание услуги.");
+      showToast("Введите описание услуги.", "info");
       return;
     }
 
     if (product.price <= 0) {
-      alert("Стоимость должна быть больше 0.");
+      showToast("Стоимость должна быть больше 0.", "info");
       return;
     }
 
     if (product.duration <= 0) {
-      alert("Длительность должна быть больше 0.");
+      showToast("Длительность должна быть больше 0.", "info");
       return;
     }
 
@@ -101,14 +104,14 @@ export default function ProductChange() {
       });
 
       if (!response.ok) {
-        throw new Error("Не удалось обновить услугу.");
+        showToast("Не удалось обновить услугу.", "error");
       }
 
-      alert("Услуга успешно обновлена.");
+      showToast("Услуга успешно обновлена!", "success");
       navigate("/admin");
     } catch (error) {
       console.error(error);
-      alert("Ошибка при обновлении услуги.");
+      showToast("Ошибка при обновлении услуги.", "error");
     } finally {
       setSaving(false);
     }
@@ -155,7 +158,8 @@ export default function ProductChange() {
   }
 
   return (
-    <section className="min-h-screen bg-[#ececec] px-4 py-8 md:px-8 lg:px-10">
+    <> 
+      <Header /><section className="min-h-screen bg-[#ececec] px-4 py-8 md:px-8 lg:px-10">
       <div className="mx-auto max-w-275">
         <div className="rounded-4xl bg-linear-to-r from-[#1765f3] to-[#18a0f4] px-6 py-8 text-white shadow-[0_20px_40px_rgba(0,0,0,0.08)] md:px-10 md:py-10">
           <div className="mb-5 inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur">
@@ -194,8 +198,7 @@ export default function ProductChange() {
                   value={product.name}
                   onChange={handleChange}
                   placeholder="Например: Вакцинация"
-                  className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
-                />
+                  className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20" />
               </div>
 
               <div>
@@ -209,8 +212,7 @@ export default function ProductChange() {
                   value={product.price}
                   onChange={handleChange}
                   placeholder="Например: 500"
-                  className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
-                />
+                  className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20" />
               </div>
 
               <div>
@@ -224,8 +226,7 @@ export default function ProductChange() {
                   value={product.duration}
                   onChange={handleChange}
                   placeholder="Например: 1"
-                  className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
-                />
+                  className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20" />
               </div>
 
               <div>
@@ -239,8 +240,7 @@ export default function ProductChange() {
                   onChange={handleChange}
                   rows={5}
                   placeholder="Кратко опишите услугу"
-                  className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
-                />
+                  className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20" />
               </div>
 
               <div className="flex flex-wrap gap-3 pt-2">
@@ -311,5 +311,6 @@ export default function ProductChange() {
         </div>
       </div>
     </section>
+    </>
   );
 }

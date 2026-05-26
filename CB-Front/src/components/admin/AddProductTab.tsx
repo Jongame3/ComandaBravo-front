@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { ProductCreate } from "../../data/adminType";
 import { apiFetch } from "../../Functions/apiFetch";
+import { useToast } from "../ToastContext";
 
 export function AddProductTab() {
   const [product, setProduct] = useState<ProductCreate>({
@@ -9,7 +10,7 @@ export function AddProductTab() {
     Description: "",
     Duration: 0,
   });
-
+  const {showToast} = useToast();
   function handleProductChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
@@ -37,11 +38,9 @@ export function AddProductTab() {
     });
 
     if (!response.ok) {
-      console.log("Ошибка при отправке данных на сервер");
+      showToast("Ошибка при отправке данных на сервер","error");
     }
-
-    console.log("Отправить продукт на backend:", product);
-
+    showToast("Продукт успешно добавлен!","error")
     setProduct({
       Name: "",
       Price: 0,

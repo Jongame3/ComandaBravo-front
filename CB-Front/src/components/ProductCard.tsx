@@ -2,9 +2,11 @@ import {useNavigate } from 'react-router-dom';
 import { type Product } from '../data/adminType';
 import { useAuth } from './AuthContext';
 import { apiFetch } from '../Functions/apiFetch';
+import { useToast } from './ToastContext';
 
 const ProductCard = ({ name, description, price, id,  duration}: Product) =>  {
     const navigate = useNavigate();
+    const {showToast} = useToast();
 
     const {user} = useAuth()
     async function handleDelete() {
@@ -12,7 +14,7 @@ const ProductCard = ({ name, description, price, id,  duration}: Product) =>  {
             method: "DELETE"
         })
         if(!response.ok) {
-            throw new Error("{ezatkmrb");
+            showToast("Не удалось удалить услугу", "error");
         }
     }
 

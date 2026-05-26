@@ -6,12 +6,15 @@ import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
 import { isAfter } from "date-fns";
 import Footer from "../components/Footer";
+import { useToast } from "../components/ToastContext";
+import { parsePetInfo } from "../Functions/parsePetInfo";
+import { formatDate } from "../Functions/formatDate";
 
 export type Pet = {
-  id : number;
+  id: number;
   name: string;
   healthProblems: string;
-  userID : number;
+  userID: number;
   type: number;
 };
 
@@ -24,289 +27,365 @@ export const PetTypeMap: Record<number, string> = {
   5: "Кролик",
   6: "Морская свинка",
 };
-function getStatusText(isApproved: boolean, date: string, time : number) {
-  const now = new Date()
-  const appointmentTime = new Date(`${date}T${String(time).padStart(2, "0")}:00`);
+function getStatusText(isApproved: boolean, date: string, time: number) {
+  const now = new Date();
+  const appointmentTime = new Date(
+    `${date}T${String(time).padStart(2, "0")}:00`,
+  );
 
-  if(isApproved && isAfter(appointmentTime, now)) return "Подтверждена"
-  if(isApproved && !isAfter(appointmentTime, now)) return "Проведена"
-  if(!isApproved && !isAfter(appointmentTime, now)) return "Отменена"
-  return "Ожидает"
+  if (isApproved && isAfter(appointmentTime, now)) return "Подтверждена";
+  if (isApproved && !isAfter(appointmentTime, now)) return "Проведена";
+  if (!isApproved && !isAfter(appointmentTime, now)) return "Отменена";
+  return "Ожидает";
 }
 
-function getStatusStyles(isApproved: boolean, date: string, time : number) {
-  const now = new Date()
-  const appointmentTime = new Date(`${date}T${String(time).padStart(2, "0")}:00`);
+function getStatusStyles(isApproved: boolean, date: string, time: number) {
+  const now = new Date();
+  const appointmentTime = new Date(
+    `${date}T${String(time).padStart(2, "0")}:00`,
+  );
 
-  if(isApproved && isAfter(appointmentTime, now)) return "bg-emerald-100 text-emerald-700"
-  if(isApproved && !isAfter(appointmentTime, now)) return "bg-emerald-300 text-emerald-700"
-  if(!isApproved && !isAfter(appointmentTime,now)) return "bg-red-400 text-black"
+  if (isApproved && isAfter(appointmentTime, now))
+    return "bg-emerald-100 text-emerald-700";
+  if (isApproved && !isAfter(appointmentTime, now))
+    return "bg-emerald-300 text-emerald-700";
+  if (!isApproved && !isAfter(appointmentTime, now))
+    return "bg-red-400 text-black";
   return "bg-amber-100 text-amber-700";
 }
-
+function isAppointmentPassed(date: string, time: number) {
+  const now = new Date();
+  const appointmentTime = new Date(
+    `${date}T${String(time).padStart(2, "0")}:00`,
+  );
+  return !isAfter(appointmentTime, now);
+}
 
 export default function UserProfilePage() {
-    const {logout} = useAuth()
-    const navigate = useNavigate()
-    
-    function handleLogout() {
-        logout()
+  const { showToast } = useToast();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
-        setTimeout(() => {
-            navigate("/", {replace : true});
-        },0)
-    }
+  function handleLogout() {
+    logout();
+
+    setTimeout(() => {
+      navigate("/", { replace: true });
+    }, 0);
+  }
   const { user } = useAuth();
 
-  const [appointments,setAppointments] = useState<Appointment[]>([]);
-  const [pets,setPets] = useState<Pet[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [pets, setPets] = useState<Pet[]>([]);
 
-    function formatTime(startTime: number) {
-        return `${startTime.toString().padStart(2, "0")}:00`;
+  function formatTime(startTime: number) {
+    return `${startTime.toString().padStart(2, "0")}:00`;
+  }
+
+  function handleOpenAddPet() {
+    navigate("/petadd");
+  }
+
+  async function loadAppointments() {
+    const response = await apiFetch(
+      `/appointment/GetByUserId?userid=${user?.id}`,
+    );
+    if (!response.ok) {
+      showToast("Не удалось загрузить записи", "error");
     }
-
-    function handleOpenAddPet() {
-        navigate("/petadd");
+    const data: Appointment[] = await response.json();
+    setAppointments(data);
+  }
+  async function loadPets() {
+    const response = await apiFetch(`/pet/GetByUserId?userid=${user?.id}`);
+    if (!response.ok) {
+      showToast("Не удалось загрузить питомцев", "error");
     }
+    const data: Pet[] = await response.json();
+    setPets(data);
+  }
 
-    async function loadAppointments() {
-        const response = await apiFetch(`/appointment/GetByUserId?userid=${user?.id}`);
-        if(!response.ok){
-            throw new Error("Не удалось загрузить ваши записи");
-        }
-        const data : Appointment[] = await response.json();
-        setAppointments(data);
+  useEffect(() => {
+    loadAppointments();
+    loadPets();
+  }, []);
+
+  async function handleAppointmentDiscard(id: number) {
+    const response = await apiFetch(`/appointment?id=${id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      showToast("Не удалось удалить запись", "error");
     }
-    async function loadPets() {
-        const response = await apiFetch(`/pet/GetByUserId?userid=${user?.id}`);
-        if(!response.ok){
-            throw new Error("Не удалось загрузить питомцев");
-        }
-        const data : Pet[] = await response.json();
-        setPets(data);
-    }
+    setAppointments((prev) => prev.filter((a) => a.id !== id));
+  }
 
-    useEffect(() => {
-        loadAppointments();
-        loadPets();
-    },[])
-
-    async function handleAppointmentDiscard(id: number) {
-        const response = await apiFetch(`/appointment?id=${id}`, {
-            method: "DELETE",
-        })
-        if(!response.ok) {
-            throw new Error("вафельки");
-        }
-        setAppointments((prev) => prev.filter((a) => a.id !== id));
-    }
-
-    async function handleDelete(id: number) {
+  async function handleDelete(id: number) {
     const response = await apiFetch(`/pet?id=${id}`, {
-        method : "DELETE"
-    })
-    if (!response.ok){
-        throw new Error("nj gbplf dfakbpsvs")
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      showToast("Не удалось удалить питомца", "error");
     }
     setPets((prev) => prev.filter((a) => a.id !== id));
-}
+  }
+  async function handleUserDelete() {
+    handleLogout();
+    const response = await apiFetch(`/User?id=${user?.id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      showToast("Не удалось удалить пользователя", "error");
+    }
+  }
 
   return (
     <>
-    <Header />
-        <section className="min-h-screen bg-[#ececec] px-4 py-8 md:px-8 lg:px-10">
-          <div className="mx-auto max-w-350">
-              <div className="rounded-4xl bg-linear-to-r from-[#1765f3] to-[#18a0f4] px-6 py-8 text-white shadow-[0_20px_40px_rgba(0,0,0,0.08)] md:px-10 md:py-10">
-                  <div className="max-w-190">
-                      <div className="mb-5 inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur">
-                          Comanda Bravo • Профиль пользователя
-                      </div>
-                      <h1 className="text-4xl font-extrabold leading-tight md:text-5xl xl:text-6xl">
-                          Личный кабинет владельца питомца
-                      </h1>
-                      <p className="mt-5 max-w-155 text-base leading-7 text-white/90 md:text-lg">
-                          Здесь можно просматривать свои записи, следить за статусом приёма
-                          и управлять списком своих питомцев.
-                      </p>
-                  </div>
+      <Header />
+      <section className="min-h-screen bg-[#ececec] px-4 py-8 md:px-8 lg:px-10">
+        <div className="mx-auto max-w-350">
+          <div className="rounded-4xl bg-linear-to-r from-[#1765f3] to-[#18a0f4] px-6 py-8 text-white shadow-[0_20px_40px_rgba(0,0,0,0.08)] md:px-10 md:py-10">
+            <div className="max-w-190">
+              <div className="mb-5 inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur">
+                Comanda Bravo • Профиль пользователя
               </div>
-
-              <div className="mt-8 grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
-                  <div className="space-y-6">
-                      <div
-                          id="appointments"
-                          className="rounded-4xl bg-[#dfe1e6]/70 p-5 shadow-[0_12px_30px_rgba(0,0,0,0.05)] md:p-6"
-                      >
-                          <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-                              <div>
-                                  <h2 className="text-4xl font-extrabold text-[#1b2b6b]">
-                                      Мои записи
-                                  </h2>
-                                  <p className="mt-2 text-slate-500">
-                                      Здесь отображаются все ваши записи на услуги клиники.
-                                  </p>
-                              </div>
-                              <div className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#1b2b6b] shadow-sm">
-                                  Всего: {appointments.length}
-                              </div>
-                          </div>
-
-                          {appointments.length === 0 ? (
-                              <div className="rounded-3xl bg-white p-10 text-center shadow-[0_10px_18px_rgba(0,0,0,0.05)]">
-                                  <p className="text-sm font-medium text-slate-500">
-                                      У вас пока нет записей.
-                                  </p>
-                              </div>
-                          ) : (
-                              <div className="grid gap-5">
-                                  {appointments.map((appointment) => {
-                                      const statusText = getStatusText(appointment.isApproved, appointment.date, appointment.startTime);
-                                      const statusStyle = getStatusStyles(appointment.isApproved, appointment.date, appointment.startTime);
-                                      return (
-                                          <div
-                                              key={appointment.id}
-                                              className="rounded-3xl bg-[#a8e2ba] p-5 shadow-[0_10px_18px_rgba(0,0,0,0.05)]"
-                                          >
-                                              <div className="flex items-start justify-between gap-4">
-                                                  <div>
-                                                      <h3 className="text-2xl font-extrabold text-black">
-                                                          {appointment.productInfo}
-                                                      </h3>
-                                                      <p className="mt-2 text-slate-700">
-                                                          Питомец: {appointment.petInfo}
-                                                      </p>
-                                                  </div>
-                                                  <span
-                                                      className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyle}`}
-                                                  >
-                                                      {statusText}
-                                                  </span>
-                                              </div>
-
-                                              <div className="mt-4 space-y-1 text-sm text-slate-700">
-                                                  <p>Дата: {appointment.date}</p>
-                                                  <p>Время: {formatTime(appointment.startTime)}</p>
-                                              </div>
-                                              <button onClick={() => handleAppointmentDiscard(appointment.id)} className="w-20 mt-3 bottom-3 right-3 bg-green-400 rounded-full hover:bg-green-200 inline-flex items-center justify-center cursor-pointer px-3 py-2 text-sm">Отменить</button>
-                                          </div>
-                                      );
-                                  })}
-                              </div>
-                          )}
-                      </div>
-
-                      <div
-                          id="pets"
-                          className="rounded-4xl-[#dfe1e6]/70 p-5 shadow-[0_12px_30px_rgba(0,0,0,0.05)] md:p-6"
-                      >
-                          <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-                              <div>
-                                  <h2 className="text-4xl font-extrabold text-[#1b2b6b]">
-                                      Мои питомцы
-                                  </h2>
-                                  <p className="mt-2 text-slate-500">
-                                      Список питомцев, привязанных к вашему профилю.
-                                  </p>
-                              </div>
-
-                              <button
-                                  type="button"
-                                  onClick={handleOpenAddPet}
-                                  className="w-fit rounded-full bg-[#09da72] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-95 cursor-pointer"
-                              >
-                                  Добавить нового
-                              </button>
-                          </div>
-
-                          {pets.length === 0 ? (
-                              <div className="rounded-3xl bg-white p-10 text-center shadow-[0_10px_18px_rgba(0,0,0,0.05)]">
-                                  <p className="text-sm font-medium text-slate-500">
-                                      Питомцы пока не добавлены.
-                                  </p>
-
-                                  <button
-                                      type="button"
-                                      onClick={handleOpenAddPet}
-                                      className="mt-5 rounded-full bg-[#09da72] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-95 cursor-pointer"
-                                  >
-                                      Добавить первого питомца
-                                  </button>
-                              </div>
-                          ) : (
-                              <div className="grid gap-5 md:grid-cols-2">
-                                  {pets.map((pet) => (
-                                      <div key={pet.id} 
-                                      className="rounded-[28px] bg-[#a8e2ba] p-5 shadow-md">
-                                            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                                                <h3 className="min-w-0 text-2xl font-extrabold text-black wrap-break-word sm:flex-1">
-                                                {pet.name}
-                                                </h3>
-
-                                                <div className="flex shrink-0 gap-3">
-                                                <button
-                                                    type="button"
-                                                    className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#1b2b6b] transition hover:bg-[#eef3ff]"
-                                                    onClick={() => navigate(`/petchange/${pet.id}`)}
-                                                >
-                                                    Изменить
-                                                </button>
-
-                                                <button
-                                                    type="button"
-                                                    className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#1b2b6b] transition hover:bg-red-50"
-                                                    onClick={() => handleDelete(pet.id)}
-                                                >
-                                                    Удалить
-                                                </button>
-                                                </div>
-                                            </div>
-
-                                            <div className="mt-4 space-y-1 text-slate-700">
-                                                <p>{PetTypeMap[pet.type]}</p>
-                                                <p>Проблемы:</p>
-                                                <p className="wrap-break-word">{pet.healthProblems || "Нет"}</p>
-                                            </div>
-                                        </div>
-                                  ))}
-                              </div>
-                          )}
-                      </div>
-                  </div>
-
-                  <aside className="rounded-4xl bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.05)] ">
-                      <div className="rounded-[28px] bg-linear-to-r from-[#1765f3] to-[#18a0f4] p-6 text-white">
-                          <p className="text-sm font-semibold text-white/80">
-                              Имя пользователя
-                          </p>
-
-                          <h2 className="mt-3 text-3xl font-extrabold">
-                              {user?.username || "User"}
-                          </h2>
-                      </div>
-
-                      <div className="mt-5 grid gap-4">
-                          <div className="rounded-3xl bg-[#eef3ff] px-5 py-5 text-[#1b2b6b]">
-                              <p className="text-sm font-medium text-slate-500">Моих записей</p>
-                              <p className="mt-3 text-3xl font-extrabold">{appointments.length}</p>
-                              <p className="mt-2 text-sm text-slate-500">Все записи</p>
-                          </div>
-
-                          <div className="rounded-3xl bg-[#eef3ff] px-5 py-5 text-[#1b2b6b]">
-                              <p className="text-sm font-medium text-slate-500">Питомцев</p>
-                              <p className="mt-3 text-3xl font-extrabold">{pets.length}</p>
-                              <p className="mt-2 text-sm text-slate-500">Добавлены в профиль</p>
-                          </div>
-                        <div className="rounded-3xl bg-[#eef3ff] px-5 py-5 text-[#1b2b6b]">
-                              <p className="text-sm font-medium text-slate-500">Выйти из профиля</p>
-                              <button className = "mt-3 bg-blue-800 w-30 rounded-full inline-flex items-center justify-center cursor-pointer px-3 py-2 text-sm text-white"
-                            onClick={handleLogout}>Выйти</button>
-                          </div>
-                      </div>
-                  </aside>
-              </div>
+              <h1 className="text-4xl font-extrabold leading-tight md:text-5xl xl:text-6xl">
+                Личный кабинет владельца питомца
+              </h1>
+              <p className="mt-5 max-w-155 text-base leading-7 text-white/90 md:text-lg">
+                Здесь можно просматривать свои записи, следить за статусом
+                приёма и управлять списком своих питомцев.
+              </p>
+            </div>
           </div>
+
+          <div className="mt-8 grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
+            <div className="space-y-6">
+              <div
+                id="appointments"
+                className="rounded-4xl bg-[#dfe1e6]/70 p-5 shadow-[0_12px_30px_rgba(0,0,0,0.05)] md:p-6"
+              >
+                <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <h2 className="text-4xl font-extrabold text-[#1b2b6b]">
+                      Мои записи
+                    </h2>
+                    <p className="mt-2 text-slate-500">
+                      Здесь отображаются все ваши записи на услуги клиники.
+                    </p>
+                  </div>
+                  <div className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#1b2b6b] shadow-sm">
+                    Всего: {appointments.length}
+                  </div>
+                </div>
+
+                {appointments.length === 0 ? (
+                  <div className="rounded-3xl bg-white p-10 text-center shadow-[0_10px_18px_rgba(0,0,0,0.05)]">
+                    <p className="text-sm font-medium text-slate-500">
+                      У вас пока нет записей.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid gap-5">
+                    {appointments.map((appointment) => {
+                      const statusText = getStatusText(appointment.isApproved,appointment.date,appointment.startTime,);
+                      const statusStyle = getStatusStyles(appointment.isApproved, appointment.date, appointment.startTime,);
+                      const { petName } = parsePetInfo(appointment.petInfo);
+
+                      return (
+                        <div
+                          key={appointment.id}
+                          className="rounded-3xl bg-[#a8e2ba] p-5 shadow-[0_10px_18px_rgba(0,0,0,0.05)]"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <h3 className="text-2xl font-extrabold text-black">
+                                {appointment.productInfo}
+                              </h3>
+                              <p className="mt-2 text-slate-700">
+                                Питомец: {petName}
+                              </p>
+                            </div>
+                            <span
+                              className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyle}`}
+                            >
+                              {statusText}
+                            </span>
+                          </div>
+
+                          <div className="mt-4 space-y-1 text-sm text-slate-700">
+                            <p>Дата: {formatDate(appointment.date)}</p>
+                            <p>Время: {formatTime(appointment.startTime)}</p>
+                          </div>
+                          {isAppointmentPassed(
+                            appointment.date,
+                            appointment.startTime,
+                          ) ? (
+                            <button
+                              onClick={() =>
+                                handleAppointmentDiscard(appointment.id)
+                              }
+                              className="w-20 mt-3 bottom-3 right-3 bg-green-400 rounded-full hover:bg-green-200 inline-flex items-center justify-center cursor-pointer px-3 py-2 text-sm"
+                            >
+                              Удалить
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() =>
+                                handleAppointmentDiscard(appointment.id)
+                              }
+                              className="w-20 mt-3 bottom-3 right-3 bg-green-400 rounded-full hover:bg-green-200 inline-flex items-center justify-center cursor-pointer px-3 py-2 text-sm"
+                            >
+                              Отменить
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div
+                id="pets"
+                className="rounded-4xl-[#dfe1e6]/70 p-5 shadow-[0_12px_30px_rgba(0,0,0,0.05)] md:p-6"
+              >
+                <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <h2 className="text-4xl font-extrabold text-[#1b2b6b]">
+                      Мои питомцы
+                    </h2>
+                    <p className="mt-2 text-slate-500">
+                      Список питомцев, привязанных к вашему профилю.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleOpenAddPet}
+                    className="w-fit rounded-full bg-[#09da72] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-95 cursor-pointer"
+                  >
+                    Добавить нового
+                  </button>
+                </div>
+
+                {pets.length === 0 ? (
+                  <div className="rounded-3xl bg-white p-10 text-center shadow-[0_10px_18px_rgba(0,0,0,0.05)]">
+                    <p className="text-sm font-medium text-slate-500">
+                      Питомцы пока не добавлены.
+                    </p>
+
+                    <button
+                      type="button"
+                      onClick={handleOpenAddPet}
+                      className="mt-5 rounded-full bg-[#09da72] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-95 cursor-pointer"
+                    >
+                      Добавить первого питомца
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid gap-5 md:grid-cols-2">
+                    {pets.map((pet) => (
+                      <div
+                        key={pet.id}
+                        className="rounded-[28px] bg-[#a8e2ba] p-5 shadow-md"
+                      >
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                          <h3 className="min-w-0 text-2xl font-extrabold text-black wrap-break-word sm:flex-1">
+                            {pet.name}
+                          </h3>
+
+                          <div className="flex shrink-0 gap-3">
+                            <button
+                              type="button"
+                              className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#1b2b6b] transition hover:bg-[#eef3ff]"
+                              onClick={() => navigate(`/petchange/${pet.id}`)}
+                            >
+                              Изменить
+                            </button>
+
+                            <button
+                              type="button"
+                              className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#1b2b6b] transition hover:bg-red-50"
+                              onClick={() => handleDelete(pet.id)}
+                            >
+                              Удалить
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 space-y-1 text-slate-700">
+                          <p>{PetTypeMap[pet.type]}</p>
+                          <p>Проблемы:</p>
+                          <p className="wrap-break-word">
+                            {pet.healthProblems || "Нет"}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <aside className="rounded-4xl bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.05)] ">
+              <div className="rounded-[28px] bg-linear-to-r from-[#1765f3] to-[#18a0f4] p-6 text-white">
+                <p className="text-sm font-semibold text-white/80">
+                  Имя пользователя
+                </p>
+
+                <h2 className="mt-3 text-3xl font-extrabold">
+                  {user?.username || "User"}
+                </h2>
+              </div>
+
+              <div className="mt-5 grid gap-4">
+                <div className="rounded-3xl bg-[#eef3ff] px-5 py-5 text-[#1b2b6b]">
+                  <p className="text-sm font-medium text-slate-500">
+                    Моих записей
+                  </p>
+                  <p className="mt-3 text-3xl font-extrabold">
+                    {appointments.length}
+                  </p>
+                  <p className="mt-2 text-sm text-slate-500">Все записи</p>
+                </div>
+
+                <div className="rounded-3xl bg-[#eef3ff] px-5 py-5 text-[#1b2b6b]">
+                  <p className="text-sm font-medium text-slate-500">Питомцев</p>
+                  <p className="mt-3 text-3xl font-extrabold">{pets.length}</p>
+                  <p className="mt-2 text-sm text-slate-500">
+                    Добавлены в профиль
+                  </p>
+                </div>
+                <div className="rounded-3xl bg-[#eef3ff] px-5 py-5 text-[#1b2b6b]">
+                  <p className="text-sm font-medium text-slate-500">
+                    Управление профилем
+                  </p>
+                  <button
+                    className="mt-3 bg-blue-800 w-30 rounded-full inline-flex items-center justify-center cursor-pointer px-3 py-2 text-sm text-white"
+                    onClick={handleLogout}
+                  >
+                    Выйти
+                  </button>
+                  <button
+                    className="mt-3 ml-4 bg-blue-800 w-30 rounded-full inline-flex items-center justify-center cursor-pointer px-4 py-2 text-sm text-white whitespace-nowrap"
+                    onClick={handleUserDelete}
+                  >
+                    Удалить
+                  </button>
+                  <button
+                    className="mt-3 ml-4 bg-blue-800 w-30 rounded-full inline-flex items-center justify-center cursor-pointer px-4 py-2 text-sm text-white whitespace-nowrap"
+                    onClick={() => navigate("/profile/update")}
+                  >
+                    Редактировать
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
       </section>
-      <Footer/>
-      </>
+      <Footer />
+    </>
   );
 }

@@ -6,6 +6,7 @@ import {type Product } from "../data/adminType";
 import { apiFetch } from "../Functions/apiFetch";
 import Header from "../components/Header";
 import type { Pet } from "./UserProfile";
+import { useToast } from "../components/ToastContext";
 
 type AppointmentSlot = number; 
 
@@ -14,6 +15,7 @@ export default function BookingPage() {
   const navigate = useNavigate();
   let params = useParams();
   const { user } = useAuth();
+  const {showToast} = useToast();
 
   const [service, setService] = useState<Product | null>(null);
   const [pets, setPets] = useState<Pet[]>([]);
@@ -83,6 +85,7 @@ export default function BookingPage() {
 
   async function handleBooking() {
     if (!selectedDate || selectedSlot === null || !selectedPet) return;
+    const selectedPetObject = pets.find((pet) => pet.id === selectedPet);
 
     const response = await apiFetch("/appointment", {
       method : "POST",
@@ -93,15 +96,16 @@ export default function BookingPage() {
         productInfo: service?.name,
         startTime: selectedSlot,
         date: selectedDate,
-        petInfo: pets.find((pet) => pet.id === selectedPet)?.name,
+        petInfo: selectedPetObject ? `${selectedPetObject.name}: ${selectedPetObject.healthProblems || "нет проблем"}`: "",
         duration: service?.duration,
         isApproved: false,
         petType: pets.find((pet) => pet.id === selectedPet)?.type, 
       })
     })
     if (!response.ok) {
-      throw new Error("хуйня какаято");
+      showToast("Не удалось создать запись","error");
     }
+    showToast("Вы были успешно записаны!","success")
     navigate("/");
   }
 

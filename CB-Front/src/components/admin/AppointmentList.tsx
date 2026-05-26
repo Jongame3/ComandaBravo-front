@@ -1,4 +1,6 @@
 import type { Appointment } from "../../data/adminType";
+import { formatDate } from "../../Functions/formatDate";
+import { parsePetInfo } from "../../Functions/parsePetInfo";
 import { AppointmentCard } from "./AppointmentCard";
 import { isAfter } from "date-fns";
 
@@ -56,6 +58,7 @@ function canConfirm(appointment : Appointment) {
 }
 
 
+
 export function AppointmentList({appointments,variant,emptyText,showConfirmButton = false,onConfirm, onDiscard}: AppointmentListProps) {
   if (appointments.length === 0) {
     return (
@@ -102,6 +105,7 @@ export function AppointmentList({appointments,variant,emptyText,showConfirmButto
               const statusText = getStatusText(appointment.isApproved, appointment.date, appointment.startTime);
               const statusStyles = getStatusStyles(appointment.isApproved, appointment.date, appointment.startTime);
               const formattedTime = formatTime(appointment.startTime);
+              const { petName, healthProblems } = parsePetInfo(appointment.petInfo);
 
               return (
                 <tr
@@ -116,8 +120,22 @@ export function AppointmentList({appointments,variant,emptyText,showConfirmButto
                     {appointment.username}
                   </td>
 
-                  <td className="px-5 py-4 text-slate-700">
-                    {appointment.petInfo}
+                  <td className="px-5 py-4">
+                    <div className="max-w-65">
+                      <p className="font-semibold text-slate-800 text-center">
+                        {petName}
+                      </p>
+
+                      <div className="mt-2 rounded-2xl bg-red-50 px-3 py-2">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-red-500">
+                          Проблемы
+                        </p>
+
+                        <p className="mt-1 text-xs leading-5 text-slate-700 wrap-break-word">
+                          {healthProblems}
+                        </p>
+                      </div>
+                    </div>
                   </td>
                   <td className="px-5 py-4 text-slate-700">
                     {PetTypeMap[appointment.petType]}
@@ -128,7 +146,7 @@ export function AppointmentList({appointments,variant,emptyText,showConfirmButto
                   </td>
 
                   <td className="px-5 py-4 text-slate-700">
-                    {appointment.date}
+                    {formatDate(appointment.date)}
                   </td>
 
                   <td className="px-5 py-4 text-slate-700">

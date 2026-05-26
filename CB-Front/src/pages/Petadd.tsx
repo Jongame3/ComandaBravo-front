@@ -4,12 +4,14 @@ import { apiFetch } from "../Functions/apiFetch"
 import { type Pet, PetTypeMap } from "./UserProfile"
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../components/ToastContext";
 
 
 
 export function Petadd() {
     const {user} = useAuth()
     const navigate = useNavigate()
+    const {showToast} = useToast()
     const [pet, setPet] = useState<Pet>({
     id : 0,
     name: "",
@@ -43,75 +45,102 @@ export function Petadd() {
         body: JSON.stringify(pet),
       });
 
-      if (!response.ok) throw new Error("Не удалось добавить питомца");
+      if (!response.ok) showToast("Не удалось добавить питомца","error");
 
-      alert("Питомец успешно добавлен!");
+      showToast("Питомец успешно добавлен!", "success");
       setPet({ id: 0, name: "", healthProblems: "", userID: user?.id || 0, type: 0 });
+      navigate("/profile")
     } catch (err: any) {
       console.error(err);
-      alert(err.message || "Ошибка при добавлении питомца");
+      showToast(err.message || "Ошибка при добавлении питомца", "info");
     } finally {
       setLoading(false);
-      navigate("/profile")
     }
   }
 
   return (
     <>
         <Header />
-        <div className="max-w-md mt-10 mx-auto p-6 bg-white rounded-lg shadow-md space-y-6">
-            <h2 className="text-2xl font-bold">Добавить питомца</h2>
+          <section className="min-h-screen bg-gray-50 px-4 py-12">
+          <div className="mx-auto max-w-xl rounded-[28px] bg-white p-6 shadow-[0_10px_22px_rgba(0,0,0,0.06)]">
+            <h1 className="text-3xl font-extrabold text-[#1b2b6b]">
+              Добавление питомца
+            </h1>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block font-semibold mb-1">Имя питомца</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={pet.name}
-                        onChange={handleChange}
-                        placeholder="Например: Ричи"
-                        className="w-full border rounded px-3 py-2"
-                        required />
-                </div>
+            <p className="mt-2 text-slate-500">
+              Заполните данные питомца, чтобы в дальнейшем записывать его на услуги.
+            </p>
 
-                <div>
-                    <label className="block font-semibold mb-1">Проблемы со здоровьем</label>
-                    <textarea
-                        name="healthProblems"
-                        value={pet.healthProblems}
-                        onChange={handleChange}
-                        placeholder="Если есть, кратко опишите"
-                        className="w-full border rounded px-3 py-2"
-                        rows={3} />
-                </div>
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[#1b2b6b]">
+                  Имя питомца
+                </label>
 
-                <div>
-                    <label className="block font-semibold mb-1">Тип питомца</label>
-                    <select
-                        name="type"
-                        value={pet.type}
-                        onChange={handleChange}
-                        className="w-full border rounded px-3 py-2"
-                    >
-                        {Object.entries(PetTypeMap)
-                            .map(([key, label]) => (
-                                <option key={key} value={key}>
-                                    {label}
-                                </option>
-                            ))}
-                    </select>
-                </div>
+                <input
+                  type="text"
+                  name="name"
+                  value={pet.name}
+                  onChange={handleChange}
+                  placeholder="Например: Мотя"
+                  className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
+                  required
+                />
+              </div>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[#1b2b6b]">
+                  Проблемы со здоровьем
+                </label>
+
+                <textarea
+                  name="healthProblems"
+                  value={pet.healthProblems}
+                  onChange={handleChange}
+                  placeholder="Если есть, кратко опишите"
+                  rows={4}
+                  className="w-full resize-none rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[#1b2b6b]">
+                  Тип питомца
+                </label>
+
+                <select
+                  name="type"
+                  value={pet.type}
+                  onChange={handleChange}
+                  className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
                 >
-                    {loading ? "Сохраняем..." : "Добавить питомца"}
+                  {Object.entries(PetTypeMap).map(([key, label]) => (
+                    <option key={key} value={key}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-wrap gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="rounded-full bg-[#09da72] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {loading ? "Сохраняем..." : "Добавить питомца"}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => navigate("/profile")}
+                  className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#1b2b6b] ring-1 ring-slate-200 transition hover:bg-slate-50"
+                >
+                  Назад
+                </button>
+              </div>
             </form>
-        </div>
+          </div>
+        </section>
       </>
   );
 }

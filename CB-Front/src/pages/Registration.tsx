@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../components/ToastContext";
 
 type RegistrationResponse = {
     isSucces : boolean,
@@ -12,12 +13,14 @@ function Registration() {
     const [password,setPassword] = useState("");
     const [email,setEmail] = useState("");
     const [contacts, setContacts] = useState("");
+    const [loading, setLoading] = useState(false);
+    const {showToast} = useToast();
 
     const navigate = useNavigate();
 
     async function handleRegistration() {
-
-        console.log(username, password, email, contacts)
+        try{
+            setLoading(true);
         const response = await fetch("https://localhost:7061/api/reg" , 
             {
                 method: "POST",
@@ -28,75 +31,115 @@ function Registration() {
             });
         const data : RegistrationResponse = await response.json();
 
-        console.log(data)
         if(!response.ok || !data.isSucces) {
-            alert(data.message);
+            showToast(data.message, "error");
             return;
         }
-        
-        navigate("/")
+            showToast(data.message || "Регистрация прошла успешно", "success");
+            navigate("/");
+        } catch (error) {
+            console.error(error);
+            showToast("Ошибка при регистрации", "error");
+        } finally {
+            setLoading(false);
+        }   
     }
     
-
-
-
     return (
-        <section className="min-h-screen flex itmes-center justify-center px-16 py-16">
-            <div className="w-full max-w-3xl  rounded-4xl bg-linear-to-br from-blue-600 to-sky-500 p-8 md:p-14 lg:p-16 shadow-2xl shadow-blue-200/60 flex flex-col justify-center gap-10">
-                <h1 className="max-w-xl text-4xl font-extrabold text-center leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
-                    Регистрация
-                </h1>
-                <div className='flex justify-center pt-5'>
-                    <div className='border-2 border-gray-400 bg-white w-2xl rounded-2xl px-4 shadow-sm transition focus-within:border-gray-700'>
-                        <input 
-                            className='w-full min-h-15 outline-none'
-                            type="text" 
-                            placeholder='Введите имя пользователя'
-                            value = {username}
-                            onChange={(e)=> setUsername(e.target.value)}
-                            />
-                    </div>
-                </div>
-                <div className='flex justify-center pt-5'>
-                    <div className='border-2 border-gray-400 bg-white w-2xl rounded-2xl px-4 shadow-sm transition focus-within:border-gray-700'>
-                        <input 
-                            className='w-full min-h-15 outline-none'
-                            type="text" 
-                            placeholder='Введите почту'
-                            value = {email}
-                            onChange={(e)=> setEmail(e.target.value)}
-                            />
-                    </div>
-                </div>
-                <div className='flex justify-center pt-5'>
-                    <div className='border-2 border-gray-400 bg-white w-2xl rounded-2xl px-4 shadow-sm transition focus-within:border-gray-700'>
-                        <input 
-                            className='w-full min-h-15 outline-none'
-                            type="text" 
-                            placeholder='Введите пароль'
-                            value = {password}
-                            onChange={(e)=> setPassword(e.target.value)}
-                            />
-                    </div>
-                </div>
-                <div className='flex justify-center pt-5'>
-                    <div className='border-2 border-gray-400 bg-white w-2xl rounded-2xl px-4 shadow-sm transition focus-within:border-gray-700'>
-                        <input 
-                            className='w-full min-h-15 outline-none'
-                            type="text" 
-                            placeholder='Введите номер телефона'
-                            value = {contacts}
-                            onChange={(e)=> setContacts(e.target.value)}
-                            />
-                    </div>
-                </div>
-                <div className="flex justify-center gap-10">
-                    <button className = "bg-blue-800 w-50 rounded-full inline-flex items-center justify-center cursor-pointer px-3 py-2 text-md text-white"
-                            onClick={handleRegistration}>Зарегистрироваться</button>
-                </div>
-            </div>
-        </section>
-    )
+         <section className="min-h-screen bg-gray-50 px-4 py-12 flex items-center justify-center">
+        <div className="w-full mx-auto max-w-xl rounded-[28px] bg-white p-6 shadow-[0_10px_22px_rgba(0,0,0,0.06)]">
+        <h1 className="text-3xl font-extrabold text-[#1b2b6b]">
+          Регистрация
+        </h1>
+
+        <p className="mt-2 text-slate-500">
+          Создайте аккаунт, чтобы записывать питомцев на услуги и управлять
+          своим профилем.
+        </p>
+
+        <form onSubmit={handleRegistration} className="mt-6 space-y-4">
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-[#1b2b6b]">
+              Имя пользователя
+            </label>
+
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Введите имя пользователя"
+              className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-[#1b2b6b]">
+              Почта
+            </label>
+
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Введите почту"
+              className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-[#1b2b6b]">
+              Пароль
+            </label>
+
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Введите пароль, не менее 8 символов"
+              className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-[#1b2b6b]">
+              Номер телефона
+            </label>
+
+            <input
+              type="text"
+              value={contacts}
+              onChange={(e) => setContacts(e.target.value)}
+              placeholder="Введите номер телефона"
+              className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
+              required
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-3 pt-2">
+            <button
+              type="submit"
+              disabled={loading}
+              className="rounded-full bg-[#09da72] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+            >
+              {loading ? "Регистрация..." : "Зарегистрироваться"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#1b2b6b] ring-1 ring-slate-200 transition hover:bg-slate-50 cursor-pointer"
+            >
+              Назад
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  );
 }
+
 
 export default Registration

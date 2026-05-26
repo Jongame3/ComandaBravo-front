@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../components/AuthContext";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useToast } from "../components/ToastContext";
 
 type AuthResponse = {
     isSucces : boolean,
@@ -16,6 +17,7 @@ function Authentication() {
 
     const {loginf} = useAuth();
     const navigate = useNavigate();
+    const {showToast} = useToast();
 
     async function handleLogin() {
 
@@ -28,9 +30,8 @@ function Authentication() {
                 body: JSON.stringify({login,password,}), 
             });
         const data : AuthResponse = await response.json();
-
         if(!response.ok || !data.isSucces) {
-            alert(data.message);
+            showToast("Неверный логин или пароль", "error");
             return;
         }
 
@@ -42,7 +43,6 @@ function Authentication() {
 
         loginf(data.message, user)
         
-        
         navigate("/")
     }
     
@@ -50,38 +50,69 @@ function Authentication() {
 
 
     return (
-        <section className="min-h-screen flex itmes-center justify-center px-16 py-16">
-            <div className="w-full max-w-3xl  rounded-4xl bg-linear-to-br from-blue-600 to-sky-500 p-8 md:p-14 lg:p-16 shadow-2xl shadow-blue-200/60 flex flex-col justify-center gap-10">
-                <h1 className="max-w-xl text-4xl font-extrabold text-center leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
-                    Вход в аккаунт
+        <section className="min-h-screen bg-gray-50 px-4 py-12 flex items-center justify-center">
+            <div className="w-full max-w-xl rounded-[28px] bg-white p-6 shadow-[0_10px_22px_rgba(0,0,0,0.06)]">
+                <h1 className="text-3xl font-extrabold text-[#1b2b6b]">
+                Вход в аккаунт
                 </h1>
-                <div className='flex justify-center pt-5'>
-                    <div className='border-2 border-gray-400 bg-white w-2xl rounded-2xl px-4 shadow-sm transition focus-within:border-gray-700'>
-                        <input 
-                            className='w-full min-h-15 outline-none'
-                            type="text" 
-                            placeholder='Введите логин'
-                            value = {login}
-                            onChange={(e)=> setLogin(e.target.value)}
-                            />
-                    </div>
+
+                <p className="mt-2 text-slate-500">
+                Войдите в профиль, чтобы записывать питомцев на услуги и управлять своими данными.
+                </p>
+
+                <form
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    handleLogin();
+                }}
+                className="mt-6 space-y-4"
+                >
+                <div>
+                    <label className="mb-2 block text-sm font-semibold text-[#1b2b6b]">
+                    Логин
+                    </label>
+
+                    <input
+                    type="text"
+                    placeholder="Введите логин"
+                    value={login}
+                    onChange={(e) => setLogin(e.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
+                    required
+                    />
                 </div>
-                <div className='flex justify-center pt-5'>
-                    <div className='border-2 border-gray-400 bg-white w-2xl rounded-2xl px-4 shadow-sm transition focus-within:border-gray-700'>
-                        <input 
-                            className='w-full min-h-15 outline-none'
-                            type="text" 
-                            placeholder='Введите пароль'
-                            value = {password}
-                            onChange={(e)=> setPassword(e.target.value)}
-                            />
-                    </div>
+
+                <div>
+                    <label className="mb-2 block text-sm font-semibold text-[#1b2b6b]">
+                    Пароль
+                    </label>
+
+                    <input
+                    type="password"
+                    placeholder="Введите пароль"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 outline-none transition focus:border-[#1765f3] focus:ring-2 focus:ring-[#1765f3]/20"
+                    required
+                    />
                 </div>
-                <div className="flex justify-center gap-10">
-                    <button className = "bg-blue-800 w-50 rounded-full inline-flex items-center justify-center cursor-pointer px-3 py-2 text-md text-white"
-                            onClick={handleLogin}>Войти</button>
-                    <NavLink to = "/registration" className={"bg-blue-800 w-50 rounded-full inline-flex items-center justify-center cursor-pointer px-3 py-2 text-md text-white"}>Зарегистрироваться</NavLink>
+
+                <div className="flex flex-wrap gap-3 pt-2">
+                    <button
+                    type="submit"
+                    className="rounded-full bg-[#09da72] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-95"
+                    >
+                    Войти
+                    </button>
+
+                    <NavLink
+                    to="/registration"
+                    className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#1b2b6b] ring-1 ring-slate-200 transition hover:bg-slate-50"
+                    >
+                    Зарегистрироваться
+                    </NavLink>
                 </div>
+                </form>
             </div>
         </section>
     )
