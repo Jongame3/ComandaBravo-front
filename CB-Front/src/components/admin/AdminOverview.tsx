@@ -19,7 +19,6 @@ export function AdminOverview({pendingCount,totalAppointments,onOpenProducts,onO
             Управляйте основными сценариями: добавляйте новые услуги,
             подтверждайте записи и просматривайте расписание.
           </p>
-
         </div>
 
         <div className="rounded-[28px] bg-white p-6 shadow-[0_10px_20px_rgba(0,0,0,0.06)]">

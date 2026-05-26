@@ -5,8 +5,9 @@ import type { Appointment } from "../data/adminType";
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
 import { isAfter } from "date-fns";
+import Footer from "../components/Footer";
 
-type Pet = {
+export type Pet = {
   id : number;
   name: string;
   healthProblems: string;
@@ -14,7 +15,7 @@ type Pet = {
   type: number;
 };
 
-const PetTypeMap: Record<number, string> = {
+export const PetTypeMap: Record<number, string> = {
   0: "Кошка",
   1: "Собака",
   2: "Попугай",
@@ -43,6 +44,7 @@ function getStatusStyles(isApproved: boolean, date: string, time : number) {
   return "bg-amber-100 text-amber-700";
 }
 
+
 export default function UserProfilePage() {
     const {logout} = useAuth()
     const navigate = useNavigate()
@@ -64,7 +66,7 @@ export default function UserProfilePage() {
     }
 
     function handleOpenAddPet() {
-        console.log("Открыть добавление питомца");
+        navigate("/petadd");
     }
 
     async function loadAppointments() {
@@ -88,6 +90,7 @@ export default function UserProfilePage() {
         loadAppointments();
         loadPets();
     },[])
+
     async function handleAppointmentDiscard(id: number) {
         const response = await apiFetch(`/appointment?id=${id}`, {
             method: "DELETE",
@@ -97,6 +100,16 @@ export default function UserProfilePage() {
         }
         setAppointments((prev) => prev.filter((a) => a.id !== id));
     }
+
+    async function handleDelete(id: number) {
+    const response = await apiFetch(`/pet?id=${id}`, {
+        method : "DELETE"
+    })
+    if (!response.ok){
+        throw new Error("nj gbplf dfakbpsvs")
+    }
+    setPets((prev) => prev.filter((a) => a.id !== id));
+}
 
   return (
     <>
@@ -222,40 +235,45 @@ export default function UserProfilePage() {
                           ) : (
                               <div className="grid gap-5 md:grid-cols-2">
                                   {pets.map((pet) => (
-                                      <div
-                                          key={pet.id}
-                                          className="rounded-3xl bg-[#a8e2ba] p-5 shadow-[0_8px_16px_rgba(0,0,0,0.05)]"
-                                      >
-                                          <div className="flex items-start justify-between gap-4">
-                                              <div>
-                                                  <h3 className="text-2xl font-extrabold text-black">
-                                                      {pet.name}
-                                                  </h3>
+                                      <div key={pet.id} 
+                                      className="rounded-[28px] bg-[#a8e2ba] p-5 shadow-md">
+                                            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                                                <h3 className="min-w-0 text-2xl font-extrabold text-black wrap-break-word sm:flex-1">
+                                                {pet.name}
+                                                </h3>
 
-                                                  <p className="mt-2 text-slate-700">
-                                                      {PetTypeMap[pet.type] || "абоминация"}
-                                                  </p>
+                                                <div className="flex shrink-0 gap-3">
+                                                <button
+                                                    type="button"
+                                                    className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#1b2b6b] transition hover:bg-[#eef3ff]"
+                                                    onClick={() => navigate(`/petchange/${pet.id}`)}
+                                                >
+                                                    Изменить
+                                                </button>
 
-                                                  <p className="text-slate-700">
-                                                      Проблемы: {pet.healthProblems}
-                                                  </p>
-                                              </div>
+                                                <button
+                                                    type="button"
+                                                    className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#1b2b6b] transition hover:bg-red-50"
+                                                    onClick={() => handleDelete(pet.id)}
+                                                >
+                                                    Удалить
+                                                </button>
+                                                </div>
+                                            </div>
 
-                                              <button
-                                                  type="button"
-                                                  className="rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#1b2b6b] transition hover:bg-slate-100 cursor-pointer"
-                                              >
-                                                  Изменить
-                                              </button>
-                                          </div>
-                                      </div>
+                                            <div className="mt-4 space-y-1 text-slate-700">
+                                                <p>{PetTypeMap[pet.type]}</p>
+                                                <p>Проблемы:</p>
+                                                <p className="wrap-break-word">{pet.healthProblems || "Нет"}</p>
+                                            </div>
+                                        </div>
                                   ))}
                               </div>
                           )}
                       </div>
                   </div>
 
-                  <aside className="rounded-4xl bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.05)] xl:sticky xl:top-8">
+                  <aside className="rounded-4xl bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.05)] ">
                       <div className="rounded-[28px] bg-linear-to-r from-[#1765f3] to-[#18a0f4] p-6 text-white">
                           <p className="text-sm font-semibold text-white/80">
                               Имя пользователя
@@ -287,6 +305,8 @@ export default function UserProfilePage() {
                   </aside>
               </div>
           </div>
-      </section></>
+      </section>
+      <Footer/>
+      </>
   );
 }

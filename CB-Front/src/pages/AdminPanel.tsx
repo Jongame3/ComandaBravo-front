@@ -31,9 +31,7 @@ export default function AdminPanel() {
         throw new Error("Не удалось загрузить записи")
       }
       const data : Appointment[] = await response.json();
-
-
-      console.log("appointments from API:", data);
+      
       setAppointments(data);
     } catch(error) {
       console.error("Ошибка загрузки записей:", error);

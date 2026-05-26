@@ -5,15 +5,9 @@ import { useAuth } from "../components/AuthContext";
 import {type Product } from "../data/adminType";
 import { apiFetch } from "../Functions/apiFetch";
 import Header from "../components/Header";
+import type { Pet } from "./UserProfile";
 
 type AppointmentSlot = number; 
-type Pet = {
-  id : number;
-  name: string;
-  healthProblems: string;
-  userID : number;
-  type: number;
-};
 
 
 export default function BookingPage() {
@@ -34,7 +28,11 @@ export default function BookingPage() {
     const today = new Date();
     const week: string[] = [];
     for (let i = 0; i < 7; i++) {
-      week.push(format(addDays(today, i), "yyyy-MM-dd"));
+      const day = addDays(today, i);
+      if (day.getDay() === 0) {
+        continue;
+      }
+    week.push(format(day, "yyyy-MM-dd"));
     }
     setDates(week);
     setSelectedDate(week[0]);
@@ -121,15 +119,29 @@ export default function BookingPage() {
 
         <div className="flex gap-2 overflow-x-auto py-2">
           {dates.map((date) => {
-            const dayName = format(new Date(date), "EEE dd");
+            const day = new Date(date);
+
+            const dayName = format(day, "EEE");
+            const dayNumber = format(day, "dd");
+
             const isSelected = date === selectedDate;
+
             return (
               <button
                 key={date}
-                className={`px-4 py-2 rounded-full ${isSelected ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                type="button"
                 onClick={() => setSelectedDate(date)}
+                className={`h-20 w-18 shrink-0 rounded-full flex flex-col items-center justify-center text-sm font-semibold transition
+                  ${isSelected ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}
+                `}
               >
-                {dayName}
+                <span className="text-sm font-bold uppercase">
+                  {dayName}
+                </span>
+
+                <span className="mt-1 text-xs">
+                  {dayNumber}
+                </span>
               </button>
             );
           })}

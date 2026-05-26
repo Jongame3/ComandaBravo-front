@@ -8,6 +8,9 @@ import AdminPanel from './pages/AdminPanel';
 import Registration from './pages/Registration';
 import UserProfilePage from './pages/UserProfile';
 import BookingPage from './pages/BookingPage';
+import { Petadd } from './pages/Petadd';
+import { PetChange } from './pages/PetChange';
+import ProductChange from './pages/ProductChange';
 
 
 function App() {
@@ -34,7 +37,26 @@ function App() {
             <UserProfilePage/>
           </ProtectedRoute>
           }/>
-        <Route path="/booking/:serviceId" element = {<BookingPage/>}/>
+        <Route path="/booking/:serviceId" element = {
+          <ProtectedRoute allowedRole={1}>
+            <BookingPage/>
+          </ProtectedRoute>
+          }/>
+        <Route  path = "/petadd" element={
+          <ProtectedRoute allowedRole={1}>
+            <Petadd/>
+          </ProtectedRoute>
+        }/>
+        <Route path="/petchange/:petId" element = {
+          <ProtectedRoute allowedRole={1}>
+            <PetChange/>
+          </ProtectedRoute>
+        }/>
+        <Route path="/productchange/:productId" element = {
+          <ProtectedRoute allowedRole={20}>
+            <ProductChange/>
+          </ProtectedRoute>
+        }/>
 
       </Routes>
     </>
