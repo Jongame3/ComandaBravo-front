@@ -3,12 +3,14 @@ import ProductCard from "./ProductCard";
 import Searchbar from "./Searchbar";
 import type { Product } from "../data/adminType";
 import { apiFetch } from "../Functions/apiFetch";
+import { useToast } from "./ToastContext";
 
 function ProductList() {
     const [productsList,setProducts] = useState<Product[]>([]);
     const [searchTerm,setSearchTerm] = useState("");
     const [loading,setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const {showToast} = useToast();
 
     const fetchdata = async () => {
     try{
@@ -40,7 +42,18 @@ function ProductList() {
   return target.includes(normalizedSearch);
 });
 
+async function handleDelete(id: number) {
+    const response = await apiFetch(`/product?id=${id}`, {
+      method: "DELETE",
+    });
 
+    if (!response.ok) {
+      showToast("Не удалось удалить услугу", "error");
+      return;
+    }
+    setProducts((prev) => prev.filter((a) => a.id !== id))
+    showToast("Услуга успешно удалена", "success");
+  }
     return ( 
     <section className="min-h-screen bg-gray-50 py-16">
         <div className="w-full text-4xl font-bold leading-tight tracking-tight text-center text-blue-950 md:text-5xl lg:text-6xl">Каталог наших услуг</div>
@@ -57,7 +70,7 @@ function ProductList() {
             ) : (
                 <div className="mx-auto max-w-7xl px-6 py-5">
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {filtered.map((product) => <ProductCard  key = {product.id} id={product.id}  name ={product.name} description={product.description} price = {product.price} duration={product.duration}/>)}
+                        {filtered.map((product) => <ProductCard  product={product} onDelete={handleDelete}/>)}
                     </div>
                 </div>
                 )

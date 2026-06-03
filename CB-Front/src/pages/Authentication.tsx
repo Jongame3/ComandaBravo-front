@@ -32,6 +32,8 @@ function Authentication() {
         const data : AuthResponse = await response.json();
         if(!response.ok || !data.isSucces) {
             showToast("Неверный логин или пароль", "error");
+            setLogin("");
+            setPassword("");
             return;
         }
 

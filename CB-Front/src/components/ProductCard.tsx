@@ -1,42 +1,69 @@
-import {useNavigate } from 'react-router-dom';
-import { type Product } from '../data/adminType';
-import { useAuth } from './AuthContext';
-import { apiFetch } from '../Functions/apiFetch';
-import { useToast } from './ToastContext';
+import { useNavigate } from "react-router-dom";
+import { type Product } from "../data/adminType";
+import { useAuth } from "./AuthContext";
 
-const ProductCard = ({ name, description, price, id,  duration}: Product) =>  {
-    const navigate = useNavigate();
-    const {showToast} = useToast();
-
-    const {user} = useAuth()
-    async function handleDelete() {
-        const response = await apiFetch(`/product?id=${id}`,{
-            method: "DELETE"
-        })
-        if(!response.ok) {
-            showToast("Не удалось удалить услугу", "error");
-        }
-    }
-
-    return (
-        <div className="bg-green-200 rounded-lg shadow-md p-4
-                        transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:bg-green-300 relative min-h-45 ">
-            <h3 className="text-lg font-bold">{name}</h3>
-            <div className="mt-2">
-                <p className="text-gray-600 text-sm">{description}</p>
-                <p className="text-gray-900 mt-2">Стоимость: {price} MDL</p>
-                <p className="text-gray-900 mt-2">Длительность: {duration} ч.</p>
-                {user?.role === 20 ? 
-                <div className='flex items-center justify-center'>
-                    <button onClick={() => navigate(`/productchange/${id}`)} className="w-30 mt-3 mx-4 bottom-3 right-3 bg-amber-300 rounded-full hover:bg-amber-400 inline-flex items-center justify-center cursor-pointer px-3 py-2 text-xl">Изменить</button>
-                    <button onClick={handleDelete} className="w-30 mt-3 bottom-3 right-3 bg-red-300 rounded-full hover:bg-red-400 inline-flex items-center justify-center cursor-pointer px-3 py-2 text-xl">Удалить</button>
-                </div> 
-                : 
-                <button onClick={() => navigate(`/booking/${id}`)} className="w-36 mt-3 absolute bottom-3 right-3 bg-green-400 rounded-full hover:bg-green-200 inline-flex items-center justify-center cursor-pointer px-3 py-2 text-xl">Записаться</button>}
-                
-            </div>
-        </div>
-    )
+type ProductCardProps = {
+    product : Product,
+    onDelete : (id : number) => void;
 }
+
+const ProductCard = ({product, onDelete} : ProductCardProps) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  return (
+    <div className="flex min-h-65 flex-col rounded-2xl bg-[#c8f6d5] p-5 shadow-[0_8px_18px_rgba(0,0,0,0.08)] transition duration-300 hover:-translate-y-1 hover:bg-[#b8efca] hover:shadow-[0_12px_24px_rgba(0,0,0,0.12)]">
+      <div>
+        <h3 className="text-xl font-extrabold leading-snug text-black">
+          {product.name}
+        </h3>
+
+        <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-700">
+          {product.description}
+        </p>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className="rounded-full bg-white/80 px-4 py-2 text-xs font-semibold text-[#1b2b6b]">
+            {product.price} MDL
+          </span>
+
+          <span className="rounded-full bg-white/80 px-4 py-2 text-xs font-semibold text-[#1b2b6b]">
+            {product.duration} ч.
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-auto pt-6">
+        {user?.role === 20 ? (
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => navigate(`/productchange/${product.id}`)}
+              className="flex-1 rounded-full bg-white px-4 py-3 text-sm font-semibold text-[#1b2b6b] shadow-sm transition hover:bg-[#eef3ff]"
+            >
+              Изменить
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onDelete(product.id)}
+              className="flex-1 rounded-full bg-[#09da72] px-4 py-3 text-sm font-semibold text-black shadow-sm transition hover:brightness-95"
+            >
+              Удалить
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => navigate(`/booking/${product.id}`)}
+            className="w-full rounded-full bg-[#09da72] px-5 py-3 text-sm font-semibold text-black shadow-sm transition hover:brightness-95"
+          >
+            Записаться
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default ProductCard;

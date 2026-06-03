@@ -40,7 +40,7 @@ export function AddProductTab() {
     if (!response.ok) {
       showToast("Ошибка при отправке данных на сервер","error");
     }
-    showToast("Продукт успешно добавлен!","error")
+    showToast("Продукт успешно добавлен!","success")
     setProduct({
       Name: "",
       Price: 0,

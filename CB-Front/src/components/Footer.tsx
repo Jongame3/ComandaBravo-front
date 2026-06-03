@@ -9,7 +9,6 @@ function Footer () {
                     <p className="text-sm font-semibold text-gray-500">Одна из лучших ветеринарных клиник Кишнева</p>
                 </div>
                 <div className="flex gap-6 text-sm text-gray-500">
-                    <NavLink to ="/about" className="hover:text-white">О нас</NavLink>
                     <NavLink to ="/" className="hover:text-white">Главная страница</NavLink>
                     <NavLink to="/catalog" className="hover:text-white">Наши Услуги</NavLink>
                     <NavLink to ="/profile" className="hover:text-white">Профиль</NavLink>

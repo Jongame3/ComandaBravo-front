@@ -35,7 +35,7 @@ function getStatusText(isApproved: boolean, date: string, time: number) {
 
   if (isApproved && isAfter(appointmentTime, now)) return "Подтверждена";
   if (isApproved && !isAfter(appointmentTime, now)) return "Проведена";
-  if (!isApproved && !isAfter(appointmentTime, now)) return "Отменена";
+  if (!isApproved && !isAfter(appointmentTime, now)) return "Не состоялась";
   return "Ожидает";
 }
 

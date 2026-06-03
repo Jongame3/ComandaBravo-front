@@ -15,7 +15,6 @@ function Header() {
             <div className="hidden md:flex space-x-6">
                 <NavLink to = "/"  className={' px-4 py-3 rounded-lg font-medium text-white transition duration-300 hover:bg-sky-200 hover:text-blue-500'}>Главная</NavLink>
                 <NavLink to = "/catalog" className={' px-4 py-3 rounded-lg font-medium text-white transition duration-300 hover:bg-sky-200 hover:text-blue-500'}>Каталог</NavLink>
-                <NavLink to = "/contact" className={' px-4 py-3 rounded-lg font-medium text-white transition duration-300 hover:bg-sky-200 hover:text-blue-500'}>Контакты</NavLink>
                 {!isAuthenticated ? 
                 <NavLink to = "/auth" className={' px-4 py-3 rounded-lg font-medium text-white transition duration-300 hover:bg-sky-200 hover:text-blue-500'}>Войти</NavLink>
                 : user?.role === 20 ?
