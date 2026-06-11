@@ -50,12 +50,11 @@ export function AuthProvider({children} : AuthProviderProps) {
             console.log("Таймер сработал")
             navigate("/")
             }, 3600000);
-        
-
+            
         console.log("таймер запущен")
 
         return () => clearTimeout(timerId);
-        }, [token]);
+    }, [token]);
 
     function loginf(token :string, user: User){
         localStorage.setItem("token",token);
@@ -84,7 +83,7 @@ export function useAuth() {
     const context = useContext(AuthContext);
 
     if(!context) {
-        throw new Error("Typescript выебуется")
+        throw new Error("Не там использовано")
     }
 
     return context;

@@ -18,8 +18,12 @@ function Registration() {
 
     const navigate = useNavigate();
 
-    async function handleRegistration() {
+    async function handleRegistration(e: React.SubmitEvent) {
+        e.preventDefault();
         try{
+          if(password.length < 8) {
+            showToast("Пароль слишком короткий", "error");
+            return}
             setLoading(true);
         const response = await fetch("https://localhost:7061/api/reg" , 
             {
@@ -35,8 +39,9 @@ function Registration() {
             showToast(data.message, "error");
             return;
         }
-            showToast(data.message || "Регистрация прошла успешно", "success");
+            showToast("Регистрация прошла успешно", "success");
             navigate("/");
+            return;
         } catch (error) {
             console.error(error);
             showToast("Ошибка при регистрации", "error");

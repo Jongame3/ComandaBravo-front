@@ -34,7 +34,6 @@ function ProductList() {
   
     const target = [
         product.name,
-        product.description,
     ]
     .join(" ")
     .toLowerCase();
@@ -70,7 +69,7 @@ async function handleDelete(id: number) {
             ) : (
                 <div className="mx-auto max-w-7xl px-6 py-5">
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {filtered.map((product) => <ProductCard  product={product} onDelete={handleDelete}/>)}
+                        {filtered.map((product) => <ProductCard key={product.id} product={product} onDelete={handleDelete}/>)}
                     </div>
                 </div>
                 )

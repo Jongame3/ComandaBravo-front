@@ -44,7 +44,6 @@ function Authentication() {
         };
 
         loginf(data.message, user)
-        
         navigate("/")
     }
     
@@ -108,10 +107,10 @@ function Authentication() {
                     </button>
 
                     <NavLink
-                    to="/registration"
+                    to="/"
                     className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#1b2b6b] ring-1 ring-slate-200 transition hover:bg-slate-50"
                     >
-                    Зарегистрироваться
+                    Назад
                     </NavLink>
                 </div>
                 </form>

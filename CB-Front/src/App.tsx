@@ -23,7 +23,6 @@ function App() {
 
 
   return(
-      <>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/catalog" element={<Catalog />} />
@@ -32,7 +31,7 @@ function App() {
         { <ProtectedRoute allowedRole={20}>
             <AdminPanel/>
           </ProtectedRoute> }/>
-        <Route path = "/registration" element = {<Registration/>}/>
+        <Route path ="/registration" element = {<Registration/>}/>
         <Route path="/profile" element = {
           <ProtectedRoute allowedRole={1}>
             <UserProfilePage/>
@@ -63,10 +62,7 @@ function App() {
             <UpdateUserPage/>
           </ProtectedRoute>
         }/>
-
-      </Routes>
-    </>
-    
+      </Routes>  
   )
 }
 
