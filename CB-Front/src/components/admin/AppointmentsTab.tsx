@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { Appointment } from "../../data/adminType";
 import { AppointmentList } from "./AppointmentList";
+import { isAfter } from "date-fns";
 
 type AppointmentsTabProps = {
   appointments: Appointment[];
@@ -11,6 +12,15 @@ type AppointmentsTabProps = {
 export function AppointmentsTab({ appointments, onConfirm , onDiscard}: AppointmentsTabProps) {
   const [search, setSearch] = useState("");
 
+  function getStatusText(isApproved: boolean, date: string, time : number) {
+    const now = new Date()
+    const appointmentTime = new Date(`${date}T${String(time).padStart(2, "0")}:00`);
+  
+    if(isApproved && isAfter(appointmentTime, now)) return "Подтверждена"
+    if(isApproved && !isAfter(appointmentTime, now)) return "Проведена"
+    if(!isApproved && !isAfter(appointmentTime, now)) return "Не состоялась"
+    return "Ожидает"
+  }
   
   const filteredAppointments = useMemo(() => {
     const normalizedSearch = search.toLowerCase().trim();
@@ -20,12 +30,11 @@ export function AppointmentsTab({ appointments, onConfirm , onDiscard}: Appointm
     }
 
     return appointments.filter((appointment) => {
-      const statusText = appointment.isApproved ? "подтверждена" : "ожидает";
+      const statusText = getStatusText(appointment.isApproved, appointment.date, appointment.startTime)
 
       const target = [
         appointment.username,
         appointment.productInfo,
-        appointment.petInfo,
         appointment.date,
         appointment.startTime.toString(),
         `${appointment.startTime}:00`,

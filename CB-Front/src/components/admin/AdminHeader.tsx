@@ -36,8 +36,7 @@ export function AdminHeader({pendingCount,totalAppointments,}: AdminHeaderProps)
           </h1>
 
           <p className="mt-5 max-w-155 text-base leading-7 text-white/90 md:text-lg">
-            Добавляйте услуги, подтверждайте записи клиентов и отслеживайте
-            расписание в единой административной панели.
+            Добавляйте услуги, подтверждайте записи клиентов и отслеживайте расписание и состояние записей.
           </p>
 
           
@@ -48,9 +47,6 @@ export function AdminHeader({pendingCount,totalAppointments,}: AdminHeaderProps)
             </span>
             <span className="rounded-full bg-white/12 px-4 py-2 text-sm font-semibold text-white">
               Записи
-            </span>
-            <span className="rounded-full bg-white/12 px-4 py-2 text-sm font-semibold text-white">
-              Клиенты
             </span>
             <span className="rounded-full bg-white/12 px-4 py-2 text-sm font-semibold text-white">
               Подтверждения

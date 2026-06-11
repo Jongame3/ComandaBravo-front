@@ -11,6 +11,7 @@ import { apiFetch } from "../Functions/apiFetch";
 import Header from "../components/Header";
 import { isAfter } from "date-fns";
 import { useToast } from "../components/ToastContext";
+import Footer from "../components/Footer";
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
@@ -159,6 +160,7 @@ export default function AdminPanel() {
           </div>
         </div>
       </section>
+      <Footer/>
     </>
   );
 }

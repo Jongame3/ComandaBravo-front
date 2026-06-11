@@ -50,7 +50,7 @@ export default function UpdateUserPage() {
         method: "PUT",
         body: JSON.stringify(formData),
       });
-
+      
       if (!response.ok) {
         throw new Error("Не удалось обновить профиль");
       }

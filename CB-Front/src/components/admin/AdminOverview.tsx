@@ -50,14 +50,14 @@ export function AdminOverview({pendingCount,totalAppointments,onOpenProducts,onO
         <div className="grid gap-5 lg:grid-cols-3">
           <OverviewCard
             title="Добавление продуктов"
-            description="Создавайте новые услуги для каталога."
+            description="Создавайте новые услуги для каталога. На которые потом смогут записаться пользователи."
             buttonText="Добавить"
             onClick={onOpenProducts}
           />
 
           <OverviewCard
             title="Подтверждение записей"
-            description="Обрабатывайте заявки, которые ожидают решения администратора."
+            description="Обрабатывайте заявки, которые ожидают решения ветеринара."
             buttonText="Открыть заявки"
             onClick={onOpenPending}
           />

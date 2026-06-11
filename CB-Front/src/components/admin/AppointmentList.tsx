@@ -60,6 +60,14 @@ function canConfirm(appointment : Appointment) {
 
 
 export function AppointmentList({appointments,variant,emptyText,showConfirmButton = false,onConfirm, onDiscard}: AppointmentListProps) {
+  
+  const sortedAppointments = [...appointments].sort((a, b) => {
+  const dateA = new Date(`${a.date}T${String(a.startTime).padStart(2, "0")}:00`).getTime();
+  const dateB = new Date(`${b.date}T${String(b.startTime).padStart(2, "0")}:00`).getTime();
+  return dateA - dateB; 
+  });
+
+
   if (appointments.length === 0) {
     return (
       <div className="rounded-3xl bg-white p-10 text-center shadow-[0_10px_18px_rgba(0,0,0,0.05)]">
@@ -101,7 +109,7 @@ export function AppointmentList({appointments,variant,emptyText,showConfirmButto
           </thead>
 
           <tbody>
-            {appointments.map((appointment, index) => {
+            {sortedAppointments.map((appointment, index) => {
               const statusText = getStatusText(appointment.isApproved, appointment.date, appointment.startTime);
               const statusStyles = getStatusStyles(appointment.isApproved, appointment.date, appointment.startTime);
               const formattedTime = formatTime(appointment.startTime);
